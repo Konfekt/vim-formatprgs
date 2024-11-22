@@ -1,4 +1,4 @@
-setlocal textwidth=80
+
 
 if executable('shfmt')
   if exists('##ShellFilterPost')

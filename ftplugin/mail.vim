@@ -5,9 +5,6 @@ augroup vimrcFileTypeMail
   endif
 augroup END
 
-" RFC 1855 suggests 65 because of the preceding angle brackets
-setlocal textwidth=80
-
 " see https://stackoverflow.com/questions/21413120/how-can-i-get-gg-g-in-vim-to-ignore-a-comma/21413701#21413701
 setlocal cinoptions+=+0
 

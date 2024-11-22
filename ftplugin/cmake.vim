@@ -5,13 +5,10 @@ augroup vimrcFileTypeCMake
   endif
 augroup END
 
-setlocal foldmethod=indent
-
-setlocal textwidth=80
 if executable('cmake-format')
   autocmd vimrcFileTypeCMake BufWinEnter <buffer> ++once
         \ let &l:formatprg='cmake-format'
-        \ . ' --line-width=' . &textwidth . ' --tab-size=' . &shiftwidth . (&expandtab ? '' : ' --use-tabchars')
+        \ . (&textwidth > 0 ? ' --line-width=' . &textwidth : '') . ' --tab-size=' . &shiftwidth . (&expandtab ? '' : ' --use-tabchars')
         \ . ' -'
 elseif executable('neocmakelsp')
   setlocal formatprg=neocmakelsp\ format

@@ -1,9 +1,3 @@
-setlocal textwidth=80
-setlocal shiftwidth=2
-setlocal tabstop=2
-setlocal softtabstop=2
-setlocal expandtab
-
 if executable('shfmt')
   augroup vimrcFileTypeZsh
     autocmd! * <buffer>
@@ -11,7 +5,7 @@ if executable('shfmt')
       autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif
     endif
     autocmd BufWinEnter <buffer> ++once let &l:formatprg =
-          \ 'shfmt -ln posix -sr -ci -s -i ' . &l:shiftwidth
+          \ 'shfmt --language-dialect posix --space-redirects --case-indent --simplify --indent ' . (&expandtab > 0 ? &shiftwidth : 0)
   augroup END
 endif
 if executable('format_shell_cmd.py')

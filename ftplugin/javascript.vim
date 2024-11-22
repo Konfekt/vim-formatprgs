@@ -1,6 +1,5 @@
 if &filetype !=# 'javascript' | finish | endif
 
-setlocal textwidth=80
 if executable('prettier')
   augroup vimrcFileTypeJavaScript
     autocmd! * <buffer>
@@ -9,7 +8,7 @@ if executable('prettier')
     endif
     autocmd BufWinEnter <buffer> ++once let &l:formatprg =
                 \ 'prettier --stdin-filepath=%:S --parser=javascript --single-quote' .
-                \ ' --print-width=' . &textwidth .
+                \ (&textwidth > 0 ? ' --print-width=' . &textwidth : '') .
                 \ ' --tab-width=' . &l:shiftwidth . (&expandtab ? '' : '--use-tabs') . ' --'
   augroup END
 endif
