@@ -1,4 +1,4 @@
-augroup vimrcFileTypeMail
+augroup formatprgsMail
   autocmd! * <buffer>
   if exists('##ShellFilterPost')
     autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif
@@ -11,7 +11,7 @@ setlocal cinoptions+=+0
 " Though par\ 80p2dh formats paragraphs to 80 columns, with 2 spaces of hanging
 " indent, but par does not detect indentet lists, so use it as &equalprg for =
 if empty(&l:equalprg) && executable('par')
-  autocmd vimrcFileTypeMail BufWinEnter <buffer> ++once
+  autocmd formatprgsMail BufWinEnter <buffer> ++once
         \ let s:tw = &textwidth > 0 ? string(&textwidth) : 80|
         \ let &l:equalprg = escape('par e g ' . s:tw . 'p w' . s:tw . ' rTbgqR B=.,?_A_a_0 Q=_s>', ';:?>|')|
         \ unlet s:tw
