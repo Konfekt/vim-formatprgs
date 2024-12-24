@@ -1,4 +1,4 @@
-augroup vimrcFileTypeSQL
+augroup formatprgsSQL
   autocmd! * <buffer>
   if exists('##ShellFilterPost')
     autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif
@@ -12,8 +12,8 @@ if executable('sql-formatter')
   setlocal formatprg=sql-formatter\ --language\ postgresql
 " Ships with sqlparse
 elseif executable('sqlformat')
-  autocmd vimrcFileTypeSQL BufWinEnter <buffer> ++once let &l:formatprg='sqlformat --reindent_aligned --indent_width=' . &shiftwidth . ' -'
+  autocmd formatprgsSQL BufWinEnter <buffer> ++once let &l:formatprg='sqlformat --reindent_aligned --indent_width=' . &shiftwidth . ' -'
 " From https://github.com/balling-dev/sleek/releases/
 elseif executable('sleek')
-  autocmd vimrcFileTypeSQL BufWinEnter <buffer> ++once let &l:formatprg='sleek --indent-spaces=' . &shiftwidth . ' -'
+  autocmd formatprgsSQL BufWinEnter <buffer> ++once let &l:formatprg='sleek --indent-spaces=' . &shiftwidth . ' -'
 endif

@@ -20,7 +20,7 @@ setlocal cinoptions+=+0
 
   if !empty(s:jq)
     " See https://stackoverflow.com/questions/26214156/how-to-auto-format-json-on-save-in-vim
-  augroup vimrcFileTypeJSON
+  augroup formatprgsJSON
     autocmd! * <buffer>
     if exists('##ShellFilterPost')
       autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif

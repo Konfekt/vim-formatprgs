@@ -1,7 +1,7 @@
 if &filetype !=# 'javascript' | finish | endif
 
 if executable('prettier')
-  augroup vimrcFileTypeJavaScript
+  augroup formatprgsJavaScript
     autocmd! * <buffer>
     if exists('##ShellFilterPost')
       autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif
