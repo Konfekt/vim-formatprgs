@@ -6,29 +6,24 @@ for example, `gqip` formats the current text block.
 
 Each configuration file in this repository is tailored to a specific file type and sets `formatprg` to a suitable formatter with appropriate options.
 
-## File Types and Formatters
+# File Types and Formatters
 
 Some example file types and their formatters:
 
-
 - For shell scripts, the `shfmt` tool is used with the following options:
-    - `-ln posix`: Use POSIX shell language.
-    - `-sr`: Simplify the code.
-    - `-ci`: Indent switch cases.
-    - `-s`: Minify the code.
-    - `-i`: Set the indentation level to the value of `shiftwidth`.
 
-```vim
-let &l:formatprg = 'shfmt -ln posix -sr -ci -s -i ' . &l:shiftwidth
-```
+    - `--simplify`: Minify the code.
+    - `--case-indent`: Indent switch cases.
+    - `--space-redirects `: add trailing space to redirect operators.
+    - `--indent`: Set the indentation level to the value of `shiftwidth` (if applicable).
 
-- For JavaScript files, `prettier` can be used as the formatter.
+- For JavaScript files, `prettier` is used as the formatter, whenever available.
 `prettier` is an opinionated code formatter.
-- For HTML files, `tidy` can be used as the formatter. `tidy` is a tool for cleaning up and pretty-printing HTML.
+- For HTML files, `tidy` is used as the formatter, whenever available, tool for cleaning up and pretty-printing HTML.
 - ...
 - there are many more filetypes; please check the `ftplugin` folder.
 
-## Installation
+# Installation
 
 To use these configuration files, copy them to your Vim configuration directory (usually `~/.vim/ftplugin/`).
 
@@ -44,20 +39,20 @@ Repeat the above steps for each file type configuration you want to use.
 You may also use a plug-in manager such as [vim-plug](https://github.com/junegunn/vim-plug). 
 In this case, add `Plug 'konfekt/vim-formatprgs` to your `vimrc` to use them.
 
-## Usage
+# Usage
 
-Once installed, Vim will automatically use the specified formatter when you run the `:format` command in a buffer of the corresponding file type.
+Once installed, Vim will automatically use the specified formatter when you use the `gq` command or run the `:format` command in a buffer of the corresponding file type.
 
-## Contributing
+# Contributing
 
 Contributions are welcome! If you have a configuration for a new file type or improvements to existing configurations, please open a pull request.
 
-## License
+# License
 
 This repository is licensed under the Unlicense.
 See the `LICENSE` file for more details.
 
-## References
+# References
 
 - [Vim Documentation on `formatprg`](https://vimhelp.org/options.txt.html#%27formatprg%27)
 - [shfmt](https://github.com/mvdan/sh)
