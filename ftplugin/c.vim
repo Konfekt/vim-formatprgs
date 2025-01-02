@@ -26,5 +26,5 @@ elseif executable('astyle')
               \ (&textwidth > 0 ? ' --max-code-length='..&textwidth : '')..
               \ ' --indent=spaces='..&shiftwidth..(&expandtab ? ' --convert-tabs' : '')
 elseif executable('clang-format')
-  let &l:formatprg = 'clang-format --assume-filename=%:S --style=Google'
+  let &l:formatprg = 'clang-format -style=file --fallback-style=Google --assume-filename=%:S'
 endif
