@@ -41,7 +41,7 @@ In this case, add `Plug 'konfekt/vim-formatprgs` to your `vimrc` to use them.
 
 # Usage
 
-Once installed, Vim will automatically use the specified formatter when you use the `gq` command or run the `:format` command in a buffer of the corresponding file type.
+Once installed, Vim will automatically use the specified formatter when you use the `gq` command (see `:help gq`) in a buffer of the corresponding file type.
 
 # Contributing
 
