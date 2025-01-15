@@ -18,8 +18,8 @@ if executable('uncrustify')
   autocmd formatprgsC BufWinEnter <buffer> ++once let &l:formatprg = 'uncrustify -q -l CPP '..
         \ (&textwidth > 0 ? ' --set code_width='..&textwidth..' --set cmt_width='..&textwidth : '')..
         \ ' --set indent_columns='..&shiftwidth..(&expandtab ? ' --set indent_with_tabs=0' : '')..
-        \ (filereadable(expand('%')) ? ' --assume %:S' : '')
-        \ empty(s:ft) ? '' : ' -c '..s:ft
+        \ (filereadable(expand('%')) ? ' --assume %:S' : '')..
+        \ (empty(s:ft) ? '' : (' -c '..s:ft))
 elseif executable('astyle')
   autocmd formatprgsC BufWinEnter <buffer> ++once let &l:formatprg='astyle --mode=c --style=google '..
               \ ' --pad-oper --pad-header --unpad-paren --align-pointer=name --align-reference=name --add-brackets --suffix=none '..

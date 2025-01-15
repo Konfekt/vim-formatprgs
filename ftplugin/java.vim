@@ -19,7 +19,7 @@ if executable('uncrustify')
         \ (&textwidth > 0 ? ' --set code_width='..&textwidth..' --set cmt_width='..&textwidth : '')..
         \ ' --set indent_columns='..&shiftwidth..(&expandtab ? ' --set indent_with_tabs=0' : '')..
         \ (filereadable(expand('%')) ? ' --assume %:S' : '')..
-        \ empty(s:ft) ? '' : ' -c '..s:ft
+        \ (empty(s:ft) ? '' : (' -c '..s:ft))
 elseif executable('astyle')
   autocmd formatprgsJava BufWinEnter <buffer> ++once let &l:formatprg='astyle --mode=java --style=java '..
               \ ' --pad-oper --pad-header --unpad-paren --align-pointer=name --align-reference=name --add-brackets --suffix=none '..
