@@ -12,9 +12,11 @@ if executable('stylua')
         \ ' --indent-width ' . &l:shiftwidth .
         \ ' --stdin-filepath ' . expand('%:S') . ' -- -'
 elseif executable('prettier')
+  let b:prettier_config = trim(system('prettier --find-config-path ' . expand('%:p:S')))
   autocmd formatprgsLua BufWinEnter <buffer> ++once let &l:formatprg =
-        \ 'prettier --stdin-filepath=%:S --parser=lua --single-quote' .
-        \ (&textwidth > 0 ? ' --print-width=' . &textwidth : '') .
-        \ ' --tab-width=' . &l:shiftwidth . (&expandtab ? '' : '--use-tabs') . ' --'
+        \ 'prettier --stdin-filepath=%:S --single-quote --parser=' . &filetype . ' ' .
+        \ (&textwidth > 0 ? '--print-width=' . &textwidth : '') . ' ' .
+        \ '--tab-width=' . &l:shiftwidth . ' ' . (&expandtab ? '' : '--use-tabs') . ' ' .
+        \ (filereadable(b:prettier_config) ? '--config ' . b:prettier_config : '') . ' --'
 endif
 

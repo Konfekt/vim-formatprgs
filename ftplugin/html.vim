@@ -20,6 +20,11 @@ elseif executable('html-beautify')
   " npm -g install js-beautify
   autocmd formatprgsHTML BufWinEnter <buffer> ++once let &l:formatprg = 'html-beautify -s ' . &l:shiftwidth . ' -f -'
 elseif executable('prettier')
-  autocmd formatprgsHTML BufWinEnter <buffer> ++once let &l:formatprg = 'prettier --stdin-filepath=%:S --parser=html --single-quote --tab-width=' . &l:shiftwidth . (&expandtab ? '' : '--use-tabs') . ' --'
+  let b:prettier_config = trim(system('prettier --find-config-path ' . expand('%:p:S')))
+  autocmd formatprgsHTML BufWinEnter <buffer> ++once let &l:formatprg =
+        \ 'prettier --stdin-filepath=%:S --single-quote --parser=' . &filetype . ' ' .
+        \ (&textwidth > 0 ? '--print-width=' . &textwidth : '') . ' ' .
+        \ '--tab-width=' . &l:shiftwidth . ' ' . (&expandtab ? '' : '--use-tabs') . ' ' .
+        \ (filereadable(b:prettier_config) ? '--config ' . b:prettier_config : '') . ' --'
 endif
 
