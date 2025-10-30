@@ -6,6 +6,8 @@ augroup formatprgsToml
 augroup END
 
 if executable('tombi')
-  let &l:formatprg = 'tombi format --quiet ' ..
-        \ (filereadable(expand('%')) ? '--stdin-filename %:S' : '') .. ' -'
+  " See https://github.com/tombi-toml/tombi/pull/1044#issuecomment-3465851563
+  let &l:formatprg = 'tombi format ' ..
+        \ (filereadable(expand('%')) ? '--stdin-filename %:S' : '') .. ' - ' ..
+        \ (has('win32') ? '2>nul' : '2>/dev/null')
 endif
