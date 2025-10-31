@@ -9,8 +9,10 @@ if executable('ruff')
   let &l:formatprg = 'ruff format --quiet --preview ' .
         \ (filereadable(expand('%')) ? '--stdin-filename %:S' : '') .
         \ ' -'
-elseif executable('black')
-  setlocal formatprg=black\ --quiet\ -
+elseif executable('black-macchiato')
+  setlocal formatprg=black-macchiato
+elseif executable('yapf3')
+  setlocal formatprg=yapf3\ -
 elseif executable('yapf')
   setlocal formatprg=yapf\ -
 elseif executable('autopep8')
