@@ -4,12 +4,37 @@ The `formatprg` option in Vim specifies an external program to use for formattin
 It determines in particular the behavior of the `gq` operator;
 for example, `gqip` formats the current text block.
 
-While the gq operator (`:help gq`) defaults to C (`:help C-indenting`) and is often universally used to format comments, say `gqip` to add line breaks to a paragraph, it respects a formatting program option (`:help 'formatprg'`) that can be set to a tool of one's choice.
-
-This plug-in adds file type specific settings (for common programming languages such as python, java, ...) that set it to popular options.
+This plug-in adds file type specific settings (for common programming languages such as Python, Java, ...) that set it to popular options.
 Rather meant for inspiration, but can be used as-is.
 
+# Use `gw` to Format Paragraphs
+
+While the gq operator (`:help gq`) defaults to formatting C (`:help C-indenting`) and is often universally used to format comments, say `gqip` to add line breaks to a paragraph, it respects a formatting program option (`:help 'formatprg'`) that can be set to a tool of one's choice.
+
 What `gq` with default settings does, C-style formatting, is more conveniently achieved by `gw` (`:help gw`) keeping cursor position (so that both operators become complimentary, instead of `gq` rather redundant).
+
+# Language Servers Formatters
+
+For example, if using a language server plug-in such as [lsp](https://github.com/yegappan/lsp/), then, in any file type for which a language server capable of formatting has been set up, or mapping, setting 
+
+```vim
+setlocal formatexpr=lsp#lsp#FormatExpr()
+```
+
+or
+
+```vim
+xnoremap <buffer>       gq <cmd>LspFormat<cr>
+nnoremap <buffer>       gq <plug>(LspFormat)
+```
+
+will instead bind that formatter to `gq`.
+To have both available, say the formatter set up by this plug-in as a fallback, keep `&formatexpr` as is and instead use other mappings, such as
+
+```vim
+xnoremap <buffer>       gb <cmd>LspFormat<cr>
+nnoremap <buffer>       gb <plug>(LspFormat)
+```
 
 # File Types and Formatters
 
