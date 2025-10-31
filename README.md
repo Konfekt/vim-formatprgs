@@ -4,7 +4,12 @@ The `formatprg` option in Vim specifies an external program to use for formattin
 It determines in particular the behavior of the `gq` operator;
 for example, `gqip` formats the current text block.
 
-Each configuration file in this repository is tailored to a specific file type and sets `formatprg` to a suitable formatter with appropriate options.
+While the gq operator (`:help gq`) defaults to C (`:help C-indenting`) and is often universally used to format comments, say `gqip` to add line breaks to a paragraph, it respects a formatting program option (`:help 'formatprg'`) that can be set to a tool of one's choice.
+
+This plug-in adds file type specific settings (for common programming languages such as python, java, ...) that set it to popular options.
+Rather meant for inspiration, but can be used as-is.
+
+What `gq` with default settings does, C-style formatting, is more conveniently achieved by `gw` (`:help gw`) keeping cursor position (so that both operators become complimentary, instead of `gq` rather redundant).
 
 # File Types and Formatters
 
