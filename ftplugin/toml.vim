@@ -1,13 +1,17 @@
+if !executable('tombi') | finish | endif 
+
 augroup formatprgsToml
   autocmd! * <buffer>
   if exists('##ShellFilterPost')
-    autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif
+    autocmd ShellFilterPost <buffer> if v:shell_error | echohl WarningMsg | echomsg printf('shell filter returned error %d, undoing changes', v:shell_error) | echohl None | silent! undo | endif
   endif
 augroup END
 
-if executable('tombi')
-  " See https://github.com/tombi-toml/tombi/pull/1044#issuecomment-3465851563
-  let &l:formatprg = 'tombi format ' ..
-        \ (filereadable(expand('%')) ? '--stdin-filename %:S' : '') .. ' - ' ..
-        \ (has('win32') ? '2>nul' : '2>/dev/null')
-endif
+" See https://github.com/tombi-toml/tombi/pull/1044#issuecomment-3465851563
+let &l:formatprg = printf('tombi format%s - %s',
+      \ filereadable(expand('%')) ? ' --stdin-filename ' . expand('%:p:S') . '' : '',
+      \ has('win32') ? '2>nul' : '2>/dev/null')
+
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+    \ 'setlocal formatprg< | silent! autocmd! formatprgsToml * <buffer>'
+

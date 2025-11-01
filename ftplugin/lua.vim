@@ -1,22 +1,33 @@
 augroup formatprgsLua
   autocmd! * <buffer>
   if exists('##ShellFilterPost')
-    autocmd ShellFilterPost <buffer> if v:shell_error | execute 'echom "shell filter returned error " . v:shell_error . ", undoing changes"' | undo | endif
+    autocmd ShellFilterPost <buffer> if v:shell_error | echohl WarningMsg | echomsg printf('shell filter returned error %d, undoing changes', v:shell_error) | echohl None | silent! undo | endif
   endif
 augroup END
 
 if executable('stylua')
-  autocmd formatprgsLua BufWinEnter <buffer> ++once let &l:formatprg = 'stylua ' .
-        \ ' --column-width ' . &l:textwidth .
-        \ ' --indent-type ' . (&l:expandtab ? 'Spaces' : 'Tabs') .
-        \ ' --indent-width ' . &l:shiftwidth .
-        \ ' --stdin-filepath ' . expand('%:S') . ' -- -'
-elseif executable('prettier')
-  let b:prettier_config = trim(system('prettier --find-config-path ' . expand('%:p:S')))
-  autocmd formatprgsLua BufWinEnter <buffer> ++once let &l:formatprg =
-        \ 'prettier --stdin-filepath=%:S --single-quote --parser=' . &filetype . ' ' .
-        \ (&textwidth > 0 ? '--print-width=' . &textwidth : '') . ' ' .
-        \ '--tab-width=' . &l:shiftwidth . ' ' . (&expandtab ? '' : '--use-tabs') . ' ' .
-        \ (filereadable(b:prettier_config) ? '--config ' . b:prettier_config : '') . ' --'
+  function! s:StyluaFormatexpr() abort
+    let start = v:lnum
+    let end   = v:lnum + v:count - 1
+    let start_byte = line2byte(start)
+    let end_byte   = line2byte(end) +
+          \ empty((getline(end)) ? 0 : len(getline(end))) - 1
+    let cmd = 'stylua ' .
+        \ ( &textwidth > 0 ? ' --column-width ' . &textwidth : '' ) .
+        \ ' --indent-type ' . ( &expandtab ? 'Spaces' : 'Tabs' ) .
+        \ ' --indent-width ' . shiftwidth() .
+        \ ' --stdin-filepath=' . expand('%:p:S') . '' .
+        \  printf(' --range-start %d --range-end %d -', start_byte, end_byte)
+    let view  = winsaveview()
+    try
+      " exe start ',' end '!' cmd
+      silent exe '%!' cmd
+    finally
+      call winrestview(view)
+    endtry
+  endfunction
+
+  setlocal formatexpr=<SID>StyluaFormatexpr()
 endif
 
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatprg< | unlet! b:formatprg_prettier | silent! autocmd! formatprgsLua * <buffer>'
