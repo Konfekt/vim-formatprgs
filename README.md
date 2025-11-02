@@ -1,7 +1,7 @@
-This repository contains Vim configuration files that set the `formatprg` option for various common code file types, according to the availability of the most common format programs on your computer.
-The `formatprg` option in Vim specifies an external program to use for formatting the current buffer.
+This repository contains Vim configuration files that set the `formatprg` (respectively `:formatexpr`) option for various common code file types, according to the availability of the most common format programs on your computer.
 
-It determines in particular the behavior of the `gq` operator;
+The `formatprg` option in Vim specifies an external program to use for formatting the current buffer.
+In particular, the behavior of the `gq` operator;
 for example, `gqip` formats the current text block.
 
 This plug-in adds file type specific settings (for common programming languages such as Python, Java, ...) that set it to popular options.
@@ -12,6 +12,36 @@ Rather meant for inspiration, but can be used as-is.
 While the gq operator (`:help gq`) defaults to formatting C (`:help C-indenting`) and is often universally used to format comments, say `gqip` to add line breaks to a paragraph, it respects a formatting program option (`:help 'formatprg'`) that can be set to a tool of one's choice.
 
 What `gq` with default settings does, C-style formatting, is more conveniently achieved by `gw` (`:help gw`) keeping cursor position (so that both operators become complimentary, instead of `gq` rather redundant).
+
+With suitable `'formatlistpat'` and `'formatoptions` such as 
+
+```
+set formatoptions+=nw
+set formatlistpat=\\C^\\s*\\([\\[({]\\\?\\([0-9]\\+\\\|[iIvVxXlLcCdDmM]\\+\\\|[a-zA-Z]\\)[\\]:.)}]\\s\\+\\\|[-+o*>]\\s\\+\\)\\+
+```
+
+`gw` respects lists well.
+
+# File Text Object
+
+Most formatters require additional context then the lines themselves to be formatted, some even the whole file or at least the code up to the cursor position.
+(If formatting fails, use `:redo`, mapped to `U` or `<C-R>` by default to learn about the reasons.)
+To give more context, add to your `vimrc` a text-object, say `<CR>` which operates on the whole buffer and [keeps the cursor position in the same position](https://vi.stackexchange.com/questions/2319/is-there-a-text-object-for-the-entire-buffer/24811#24811) or just up to the cursor position:
+
+```vim
+xnoremap          <cr>       ggoGg_
+function! TextObjectAll()
+    let g:restore_position = winsaveview()
+    keepjumps normal! ggVG
+    " For delete/change, we don't wish to restore cursor position.
+    if index(['c','d'], v:operator) == -1
+        call feedkeys("\<Plug>(RestoreView)")
+    end
+endfunction
+nnoremap <silent> <Plug>(RestoreView) :call winrestview(g:restore_position)<CR>
+onoremap <silent> <cr>                :<C-U>keepjumps call TextObjectAll()<CR>
+```
+
 
 # Language Servers Formatters
 
@@ -38,8 +68,11 @@ nnoremap <buffer>       gb <plug>(LspFormat)
 
 # File Types and Formatters
 
-Some example file types and their formatters:
+Some example file types and their formatters (without regarding the included fall-back formatters):
 
+- For JavaScript, Typescript, CSS, YAML, ... files, `prettier` is used as the formatter, whenever available.
+- For Python, `black(-mocchachino)` is used as the default formatter, whenever available, falling back to `ruff format`, `yapf` or `autopep8`.
+- For C(++), Java ... files, `clang-format` is used as the formatter, whenever available.
 - For shell scripts, the `shfmt` tool is used with the following options:
 
     - `--simplify`: Minify the code.
@@ -47,8 +80,6 @@ Some example file types and their formatters:
     - `--space-redirects `: add trailing space to redirect operators.
     - `--indent`: Set the indentation level to the value of `shiftwidth` (if applicable).
 
-- For JavaScript files, `prettier` is used as the formatter, whenever available.
-`prettier` is an opinionated code formatter.
 - For HTML files, `tidy` is used as the formatter, whenever available, tool for cleaning up and pretty-printing HTML.
 - ...
 - there are many more filetypes; please check the `ftplugin` folder.
