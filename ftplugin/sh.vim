@@ -6,16 +6,7 @@ augroup formatprgsSh
 augroup END
 
 if executable('shfmt')
-  if exists('##OptionSet')
-    autocmd formatprgsSh OptionSet <buffer> if index(['shiftwidth', 'expandtab', 'tabstop'], v:option) >= 0 | call s:SetShfmtFormatprg() | endif
-  endif
-  " Script-local helper to set formatprg to shfmt with the right indent.
-  function! s:SetShfmtFormatprg() abort
-    let &l:formatprg = 'shfmt --space-redirects --case-indent --simplify --indent ' . (&expandtab ? shiftwidth() : 0)
-  endfunction
-
-  " Initialize formatprg for this buffer.
-  autocmd BufWinEnter <buffer> ++once call s:SetShfmtFormatprg()
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'shfmt --space-redirects --case-indent --simplify --indent ' . (&expandtab ? shiftwidth() : 0)
 endif
 
 if executable('format_shell_cmd.py')
