@@ -20,7 +20,7 @@ augroup formatprgsCss
         \ '--tab-width=' . shiftwidth() . ' ' .
         \ (&expandtab ? '' : '--use-tabs ') .
         \  printf(' --range-start %d --range-end %d', start_byte, end_byte)
-        " \ . ' --stdin-filepath=' . expand('%:p:S')
+        \ . ' --stdin-filepath=' . expand('%:p:S')
     let view  = winsaveview()
     try
       " exe start ',' end '!' cmd
