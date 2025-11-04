@@ -10,8 +10,7 @@ if executable('stylua')
     let start = v:lnum
     let end   = v:lnum + v:count - 1
     let start_byte = line2byte(start)
-    let end_byte   = line2byte(end) +
-          \ empty((getline(end)) ? 0 : len(getline(end))) - 1
+    let end_byte   = line2byte(end + 1) - 1
     let cmd = 'stylua ' .
         \ ( &textwidth > 0 ? ' --column-width ' . &textwidth : '' ) .
         \ ' --indent-type ' . ( &expandtab ? 'Spaces' : 'Tabs' ) .

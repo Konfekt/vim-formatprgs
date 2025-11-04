@@ -27,8 +27,7 @@ elseif executable('prettier')
     let start = v:lnum
     let end   = v:lnum + v:count - 1
     let start_byte = line2byte(start)
-    let end_byte   = line2byte(end) +
-          \ empty((getline(end)) ? 0 : len(getline(end))) - 1
+    let end_byte   = line2byte(end + 1) - 1
     let cmd = s:cmd . ' ' .
         \ (filereadable(b:prettier_config) ? '--config ' . shellescape(b:prettier_config) . ' ' : '') .
         \ (&textwidth > 0 ? '--print-width=' . &textwidth . ' ' : '') .
