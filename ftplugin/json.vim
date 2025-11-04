@@ -32,6 +32,38 @@ if !empty(g:json_formatprg)
     autocmd BufWinEnter <buffer> ++once let &l:formatprg = g:json_formatprg . ' ' .
           \ (&expandtab ? '' : '--tab') . (' --indent ' . shiftwidth()) . ' "."'
   augroup END
+elseif executable('biome')
+  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
+        \ '--indent-width=' . shiftwidth() . ' ' .
+        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
+elseif executable('prettier')
+  let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' .expand('%:p:S'))) : ''
+  if v:shell_error | let b:prettier_config = '' | endif
+  function! s:PrettierFormatexpr() abort
+    let start = v:lnum
+    let end   = v:lnum + v:count - 1
+    let start_byte = line2byte(start)
+    let end_byte   = line2byte(end + 1) - 1
+    let cmd = 'prettier --single-quote --parser=babel-ts ' .
+        \ (filereadable(b:prettier_config) ? '--config ' . shellescape(b:prettier_config) . ' ' : '') .
+        \ (&textwidth > 0 ? '--print-width=' . &textwidth . ' ' : '') .
+        \ '--tab-width=' . shiftwidth() . ' ' .
+        \ (&expandtab ? '' : '--use-tabs ') .
+        \ printf(' --range-start %d --range-end %d', start_byte, end_byte)
+        \ . ' --stdin-filepath=' . expand('%:p:S')
+    let view  = winsaveview()
+    try
+      " exe start ',' end '!' cmd
+      silent exe '%!' cmd
+    finally
+      call winrestview(view)
+    endtry
+  endfunction
+  setlocal formatexpr=<SID>PrettierFormatexpr()
 endif
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal cinoptions< formatprg<'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+      \ 'setlocal cinoptions< formatprg< formatexpr< | unlet! b:prettier_config | silent! autocmd! formatprgsJSON * <buffer>'
