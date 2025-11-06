@@ -7,7 +7,11 @@ for example, `gqip` formats the current text block.
 This plug-in adds file type specific settings (for common programming languages such as Python, Java, ...) that set it to popular options.
 Rather meant for inspiration, but can be used as-is.
 
-# Use `gw` to Format Paragraphs
+# Use `gq` to format code
+
+Once this plug-in installed, Vim will automatically use the specified formatter when you use the `gq` command (see `:help gq`) in a buffer of the corresponding file type.
+
+# Use `gw` to format prose
 
 While the gq operator (`:help gq`) defaults to formatting C (`:help C-indenting`) and is often universally used to format comments, say `gqip` to add line breaks to a paragraph, it respects a formatting program option (`:help 'formatprg'`) that can be set to a tool of one's choice.
 
@@ -22,7 +26,7 @@ set formatlistpat=\\C^\\s*\\([\\[({]\\\?\\([0-9]\\+\\\|[iIvVxXlLcCdDmM]\\+\\\|[a
 
 `gw` respects lists well.
 
-# File Text Object
+# Buffer Text Object
 
 Most formatters require additional context then the lines themselves to be formatted, some even the whole file or at least the code up to the cursor position.
 (If formatting fails, use `:redo`, mapped to `U` or `<C-R>` by default to learn about the reasons.)
@@ -42,6 +46,24 @@ nnoremap <silent> <Plug>(RestoreView) :call winrestview(g:restore_position)<CR>
 onoremap <silent> <cr>                :<C-U>keepjumps call TextObjectAll()<CR>
 ```
 
+
+# File Types and Formatters
+
+Some example file types and their formatters (without regarding the included fall-back formatters):
+
+- For JavaScript, Typescript, CSS, YAML, ... files, `prettier` is used as the formatter, whenever available.
+- For Python, `black(-mocchachino)` is used as the default formatter, whenever available, falling back to `ruff format`, `yapf` or `autopep8`.
+- For C(++), Java ... files, `clang-format` is used as the formatter, whenever available.
+- For shell scripts, the `shfmt` tool is used with the following options:
+
+    - `--simplify`: Minify the code.
+    - `--case-indent`: Indent switch cases.
+    - `--space-redirects `: add trailing space to redirect operators.
+    - `--indent`: Set the indentation level to the value of `shiftwidth` (if applicable).
+
+- For HTML files, `tidy` is used as the formatter, whenever available, tool for cleaning up and pretty-printing HTML.
+- ...
+- there are many more filetypes; please check the `ftplugin` folder.
 
 # Language Servers Formatters
 
@@ -66,45 +88,7 @@ xnoremap <buffer>       gb <cmd>LspFormat<cr>
 nnoremap <buffer>       gb <plug>(LspFormat)
 ```
 
-# File Types and Formatters
-
-Some example file types and their formatters (without regarding the included fall-back formatters):
-
-- For JavaScript, Typescript, CSS, YAML, ... files, `prettier` is used as the formatter, whenever available.
-- For Python, `black(-mocchachino)` is used as the default formatter, whenever available, falling back to `ruff format`, `yapf` or `autopep8`.
-- For C(++), Java ... files, `clang-format` is used as the formatter, whenever available.
-- For shell scripts, the `shfmt` tool is used with the following options:
-
-    - `--simplify`: Minify the code.
-    - `--case-indent`: Indent switch cases.
-    - `--space-redirects `: add trailing space to redirect operators.
-    - `--indent`: Set the indentation level to the value of `shiftwidth` (if applicable).
-
-- For HTML files, `tidy` is used as the formatter, whenever available, tool for cleaning up and pretty-printing HTML.
-- ...
-- there are many more filetypes; please check the `ftplugin` folder.
-
-# Installation
-
-To use these configuration files, copy them to your Vim configuration directory (usually `~/.vim/ftplugin/`).
-
-For example, to install the `sh.vim` configuration:
-
-```bash
-mkdir -p ~/.vim/ftplugin
-cp sh.vim ~/.vim/ftplugin/
-```
-
-Repeat the above steps for each file type configuration you want to use.
-
-You may also use a plug-in manager such as [vim-plug](https://github.com/junegunn/vim-plug). 
-In this case, add `Plug 'konfekt/vim-formatprgs'` to your `vimrc` to use them.
-
-# Usage
-
-Once installed, Vim will automatically use the specified formatter when you use the `gq` command (see `:help gq`) in a buffer of the corresponding file type.
-
-# Forcing a specific formatter with `b:formatprg`
+# Choosing a specific formatter with `b:formatprg`
 
 Set the buffer-local variable `b:formatprg` to select a known formatter for a filetype.
 The ftplugin will honor this if the executable is found on `$PATH`, otherwise it falls back to auto-detection.
@@ -135,7 +119,7 @@ Notes:
 - The plugin configures `'formatexpr'` or `'formatprg'` accordingly.
 - If using LSP-based formatting via `'formatexpr'`, that takes precedence over `'formatprg'`; consider separate mappings to access both.
 
-# Customizing formatter arguments with `b:formatprg_args`
+# Customizing a formatter with `b:formatprg_args`
 
 Set the buffer-local variable `b:formatprg_args` to override the default CLI arguments used by the selected formatter.
 The plugin will insert `b:formatprg_args` immediately after the formatter executable.
@@ -180,6 +164,22 @@ Examples:
 
 Tip: add `unlet! b:formatprg_args` to `b:undo_ftplugin` to clean up buffer-local overrides.
 
+# Installation
+
+To use these configuration files, copy them to your Vim configuration directory (usually `~/.vim/ftplugin/`).
+
+For example, to install the `sh.vim` configuration:
+
+```bash
+mkdir -p ~/.vim/ftplugin
+cp sh.vim ~/.vim/ftplugin/
+```
+
+Repeat the above steps for each file type configuration you want to use.
+
+You may also use a plug-in manager such as [vim-plug](https://github.com/junegunn/vim-plug). 
+In this case, add `Plug 'konfekt/vim-formatprgs'` to your `vimrc` to use them.
+
 # Contributing
 
 Contributions are welcome! If you have a configuration for a new file type or improvements to existing configurations, please open a pull request.
@@ -189,11 +189,3 @@ Contributions are welcome! If you have a configuration for a new file type or im
 This repository is licensed under the Unlicense.
 See the `LICENSE` file for more details.
 
-# References
-
-- [Vim Documentation on `formatprg`](https://vimhelp.org/options.txt.html#%27formatprg%27)
-- [shfmt](https://github.com/mvdan/sh)
-- [prettier](https://prettier.io/)
-- [tidy](http://www.html-tidy.org/)
-
-Feel free to reach out if you have any questions or need further assistance.
