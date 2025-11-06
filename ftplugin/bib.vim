@@ -6,13 +6,14 @@ augroup formatprgsBib
 augroup END
 
 if executable('bibtex-tidy')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'bibtex-tidy --quiet ' .
-      \ '--merge combine --strip-enclosing-braces --drop-all-caps --encode-urls --trailing-commas --tidy-comments --remove-empty-fields --sort --blank-lines ' .
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'bibtex-tidy ' .
+      \ get(b:, 'formatprg_args', '--quiet --merge combine --strip-enclosing-braces --drop-all-caps --encode-urls --trailing-commas --tidy-comments --remove-empty-fields --sort --blank-lines') . ' ' .
       \ (&textwidth > 0 ? '--wrap=' . &textwidth : '') . ' ' .
       \ (&expandtab ? '--no-tab' : '--tab') . ' ' .
       \ '--space=' . shiftwidth()
 elseif executable('prettybib.py') || executable('prettybib')
-  let &l:formatprg = executable('prettybib') ? 'prettybib' : 'prettybib.py'
+  let &l:formatprg = (executable('prettybib') ? 'prettybib' : 'prettybib.py') .
+      \ (get(b:, 'formatprg_args', '') == '' ? '' : ' ' . get(b:, 'formatprg_args', ''))
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

@@ -9,8 +9,8 @@ augroup END
 
 if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
-  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+  let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off')
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
@@ -43,7 +43,8 @@ elseif b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang
   function! s:ClangFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
-    let cmd = 'clang-format --style=file --fallback-style=Google ' .
+    let cmd = 'clang-format ' .
+            \ get(b:, 'formatprg_args', '--style=file --fallback-style=Google') . ' ' .
             \ '--assume-filename=' . (filereadable(expand('%')) ? expand('%:p:S') : 'stdin.ts') .
             \  printf(' --lines=%d:%d -', start, end)
     let view  = winsaveview()

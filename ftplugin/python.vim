@@ -7,17 +7,17 @@ augroup END
 
 if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'ruff' || empty(b:formatprg) && executable('ruff')
-  let s:cmd = 'ruff format --quiet --preview '
+  let b:formatprg_cmd = 'ruff format ' . get(b:, 'formatprg_args', '--quiet --preview') . ' '
   function! s:RuffFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
-    let cmd = s:cmd .
+    let cmd = b:formatprg_cmd .
           \ (&textwidth > 0 ? ' --line-length=' . &textwidth : '' ) .
           \ (filereadable(expand('%')) ? ' --stdin-filename ' . expand('%:p:S') : '') .
           \  printf(' --range=%d-%d -', start, end)
     let view  = winsaveview()
     try
-      silent exe '%!' cmd
+      silent execute '%!' . cmd
     finally
       call winrestview(view)
     endtry
@@ -25,17 +25,17 @@ if b:formatprg ==# 'ruff' || empty(b:formatprg) && executable('ruff')
 
   setlocal formatexpr=<SID>RuffFormatexpr()
 elseif b:formatprg ==# 'black-macchiato' || empty(b:formatprg) && executable('black-macchiato')
-  let &l:formatprg = 'black-macchiato -'
+  let &l:formatprg = 'black-macchiato ' . get(b:, 'formatprg_args', '') . ' -'
 elseif  (b:formatprg ==# 'yapf' || empty(b:formatprg) && executable('yapf'))  ||
       \ (b:formatprg ==# 'yapf3' || empty(b:formatprg) && executable('yapf3'))
-  let s:cmd = (executable('yapf3') ? 'yapf3' :'yapf') . ' --quiet'
+  let b:formatprg_cmd = (executable('yapf3') ? 'yapf3' :'yapf') . ' ' . get(b:, 'formatprg_args', '--quiet')
   function! s:YapfFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
-    let cmd = s:cmd ..  printf(' --lines %d-%d -', start, end)
+    let cmd = b:formatprg_cmd .  printf(' --lines %d-%d -', start, end)
     let view  = winsaveview()
     try
-      silent exe '%!' cmd
+      silent execute '%!' . cmd
     finally
       call winrestview(view)
     endtry
@@ -43,16 +43,16 @@ elseif  (b:formatprg ==# 'yapf' || empty(b:formatprg) && executable('yapf'))  ||
 
   setlocal formatexpr=<SID>YapfFormatexpr()
 elseif b:formatprg ==# 'autopep8' || empty(b:formatprg) && executable('autopep8')
-  let s:cmd = 'autopep8 --quiet --aggressive --experimental '
+  let b:formatprg_cmd = 'autopep8 ' . get(b:, 'formatprg_args', '--quiet --aggressive --experimental') . ' '
   function! s:YapfFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
-    let cmd = s:cmd .
+    let cmd = b:formatprg_cmd .
           \ (&textwidth > 0 ? ' --max-line-length ' . &textwidth : '' ) .
           \  printf(' --line-range %d %d -', start, end)
     let view  = winsaveview()
     try
-      silent exe '%!' cmd
+      silent execute '%!' . cmd
     finally
       call winrestview(view)
     endtry
@@ -62,4 +62,4 @@ elseif b:formatprg ==# 'autopep8' || empty(b:formatprg) && executable('autopep8'
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal formatprg< | silent! autocmd! formatprgsPython * <buffer>'
+      \ 'setlocal formatprg< formatexpr< | silent! autocmd! formatprgsPython * <buffer>'

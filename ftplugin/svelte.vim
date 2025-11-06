@@ -7,8 +7,8 @@ augroup formatprgsSvelte
   endif
 augroup END
 
-let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'biome format ' .
+      \ get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off') . ' ' .
       \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
       \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
       \ '--indent-width=' . shiftwidth() . ' ' .

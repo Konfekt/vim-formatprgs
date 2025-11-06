@@ -11,25 +11,28 @@ if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'tidy' || empty(b:formatprg) && executable('tidy')
   " See https://stackoverflow.com/questions/7151180/use-html-tidy-to-just-indent-html-code
   autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'tidy ' .
-        \ ((&filetype ==# 'xhtml') ? '-xml ' : '') . '-quiet ' .
-        \ '--show-errors 0 -bare --show-body-only auto -wrap 0 -utf8 ' .
+        \ ((&filetype ==# 'xhtml') ? '-xml ' : '') .
+        \ get(b:, 'formatprg_args', '--quiet --show-errors 0 -bare --show-body-only auto -wrap 0 -utf8') . ' ' .
         \ '-indent ' . (&expandtab ? '' : '--indent-with-tabs ') . '--indent-spaces ' . shiftwidth()
         " \ (has('win32') ? ' 2>nul' : ' 2>/dev/null') .
   compiler tidy
 elseif b:formatprg ==# 'html-beautify' || empty(b:formatprg) && executable('html-beautify')
   " html-beautify is in js-beautify node package
   " npm -g install js-beautify
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'html-beautify ' . (&expandtab ? '' : '--indent-with-tabs ') . '-s ' . shiftwidth() . ' -f -'
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'html-beautify ' .
+        \ get(b:, 'formatprg_args', '') . ' ' .
+        \ (&expandtab ? '' : '--indent-with-tabs ') . '-s ' . shiftwidth() . ' -f -'
 elseif executable('prettier')
   let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' .expand('%:p:S'))) : ''
   if v:shell_error | let b:prettier_config = '' | endif
-  let s:cmd = 'prettier --log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=' . &filetype
+  let b:formatprg_cmd = 'prettier ' .
+        \ get(b:, 'formatprg_args', '--log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=' . &filetype) . ' '
   function! s:PrettierFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
     let start_byte = line2byte(start)
     let end_byte   = line2byte(end + 1) - 1
-    let cmd = s:cmd . ' ' .
+    let cmd = b:formatprg_cmd . ' ' .
         \ (filereadable(b:prettier_config) ? '--config ' . shellescape(b:prettier_config) . ' ' : '') .
         \ (&textwidth > 0 ? '--print-width=' . &textwidth . ' ' : '') .
         \ '--tab-width=' . shiftwidth() . ' ' .
@@ -46,8 +49,8 @@ elseif executable('prettier')
   endfunction
   setlocal formatexpr=<SID>PrettierFormatexpr()
 elseif executable('biome')
-  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+  let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off')
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
@@ -56,4 +59,4 @@ endif
 
 " Cleanly undo buffer-local changes when leaving this filetype
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '')
-      \ . 'setlocal formatprg< formatexpr< | silent! augroup formatprgsHTML | autocmd! * <buffer> | augroup END | unlet! b:prettier_config'
+      \ . 'setlocal formatprg< formatexpr< | silent! augroup formatprgsHTML | autocmd! BufWinEnter <buffer> | if exists(''##ShellFilterPost'') | autocmd! ShellFilterPost <buffer> | endif | augroup END | unlet! b:prettier_config'

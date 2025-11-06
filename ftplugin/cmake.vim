@@ -9,13 +9,15 @@ if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 
 if b:formatprg ==# 'cmake-format' || empty(b:formatprg) && executable('cmake-format')
   autocmd BufWinEnter <buffer> ++once
-        \ let &l:formatprg='cmake-format'
+        \ let &l:formatprg='cmake-format '
+        \ . get(b:, 'formatprg_args', '') . ' ' .
         \ . (&textwidth > 0 ? ' --line-width=' . &textwidth : '')
         \ . ' --tab-size=' . shiftwidth()
         \ . (&expandtab ? '' : ' --use-tabchars')
         \ . ' -'
 elseif b:formatprg ==# 'neocmakelsp' || empty(b:formatprg) && executable('neocmakelsp')
-  setlocal formatprg=neocmakelsp\ format
+    let &l:formatprg='neocmakelsp format '
+    \ . get(b:, 'formatprg_args', '')
 else
   " No formatter available; ensure we don't inherit a stale formatprg
   setlocal formatprg=

@@ -13,6 +13,7 @@ function! s:StyluaFormatexpr() abort
   let start_byte = line2byte(start)
   let end_byte   = line2byte(end + 1) - 1
   let cmd = 'stylua ' .
+      \ get(b:, 'formatprg_args', '') . ' ' .
       \ ( &textwidth > 0 ? ' --column-width ' . &textwidth : '' ) .
       \ ' --indent-type ' . ( &expandtab ? 'Spaces' : 'Tabs' ) .
       \ ' --indent-width ' . shiftwidth() .
@@ -29,4 +30,4 @@ endfunction
 
 setlocal formatexpr=<SID>StyluaFormatexpr()
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatprg< | unlet! b:formatprg_prettier | silent! autocmd! formatprgsLua * <buffer>'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatprg< | unlet! b:formatprg_prettier b:formatprg_args | silent! autocmd! formatprgsLua ShellFilterPost <buffer>'

@@ -9,7 +9,9 @@ if executable('shfmt')
   " Use shfmt as the formatter, tuned to current indentation settings.
   " -i 0 means tabs; otherwise use shiftwidth if set, else tabstop.
   autocmd BufWinEnter <buffer> ++once let &l:formatprg =
-        \ 'shfmt --space-redirects --case-indent --simplify --indent ' . shiftwidth()
+        \ 'shfmt ' .
+        \ get(b:, 'formatprg_args', '--space-redirects --case-indent --simplify') . ' ' .
+        \ '--indent ' . shiftwidth()
 endif
 if executable('format_shell_cmd.py')
   " From https://github.com/bbkane/dotfiles/blob/master/bin_common/bin_common/format_shell_cmd.py

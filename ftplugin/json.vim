@@ -31,11 +31,13 @@ if !empty(g:json_formatprg)
       autocmd ShellFilterPost <buffer> if v:shell_error | echohl WarningMsg | echomsg printf('shell filter returned error %d, undoing changes', v:shell_error) | echohl None | silent! undo | endif
     endif
     autocmd BufWinEnter <buffer> ++once let &l:formatprg = g:json_formatprg . ' ' .
-          \ (&expandtab ? '' : '--tab') . (' --indent ' . shiftwidth()) . ' "."'
+          \ get(b:, 'formatprg_args', '') .
+          \ (&expandtab ? '' : ' --tab') .
+          \ (' --indent ' . shiftwidth()) . ' "."'
   augroup END
 elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
-  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+  let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off')
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
@@ -48,7 +50,8 @@ elseif b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier'
     let end   = v:lnum + v:count - 1
     let start_byte = line2byte(start)
     let end_byte   = line2byte(end + 1) - 1
-    let cmd = 'prettier --single-quote --parser=babel-ts ' .
+    let cmd = 'prettier ' .
+        \ get(b:, 'formatprg_args', '--single-quote --parser=babel-ts') . ' ' .
         \ (filereadable(b:prettier_config) ? '--config ' . shellescape(b:prettier_config) . ' ' : '') .
         \ (&textwidth > 0 ? '--print-width=' . &textwidth . ' ' : '') .
         \ '--tab-width=' . shiftwidth() . ' ' .

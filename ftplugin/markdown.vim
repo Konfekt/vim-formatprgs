@@ -7,13 +7,15 @@ augroup formatprgsMarkdown
   endif
   let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' . expand('%:p:S'))) : ''
   if v:shell_error | let b:prettier_config = '' | endif
-  let s:cmd = 'prettier --log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=' . &filetype
+  let b:formatprg_cmd = 'prettier ' .
+        \ get(b:, 'formatprg_args', '--log-level=error --no-color --no-error-on-unmatched-pattern --single-quote') . ' ' .
+        \ '--parser=' . &filetype
   function! s:PrettierFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
     let start_byte = line2byte(start)
     let end_byte   = line2byte(end + 1) - 1
-    let cmd = s:cmd . ' ' .
+    let cmd = b:formatprg_cmd . ' ' .
         \ (filereadable(b:prettier_config) ? '--config ' . shellescape(b:prettier_config) . ' ' : '') .
         \ (&textwidth > 0 ? '--print-width=' . &textwidth . ' ' : '') .
         \ '--tab-width=' . shiftwidth() . ' ' .

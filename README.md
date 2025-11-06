@@ -135,6 +135,51 @@ Notes:
 - The plugin configures `'formatexpr'` or `'formatprg'` accordingly.
 - If using LSP-based formatting via `'formatexpr'`, that takes precedence over `'formatprg'`; consider separate mappings to access both.
 
+# Customizing formatter arguments with `b:formatprg_args`
+
+Set the buffer-local variable `b:formatprg_args` to override the default CLI arguments used by the selected formatter.
+The plugin will insert `b:formatprg_args` immediately after the formatter executable.
+Formatter-specific flags that must be computed at runtime (for example `--assume-filename`, `--stdin-filepath`, `--lines`, wrapping and indentation derived from `'textwidth'`, `'shiftwidth'`, `'expandtab'`) are still appended by the plugin.
+
+Behavior:
+
+- If `b:formatprg_args` is set, it replaces the plugin's default argument string for that formatter.
+- If `b:formatprg_args` is not set, the plugin uses its default arguments.
+- This variable is buffer-local, enabling per-file overrides.
+- Combine with `b:formatprg` to select the executable and its argument preset.
+
+Examples:
+
+- C/C++ with clang-format:
+
+    ```vim
+    let b:formatprg = 'clang-format'
+    let b:formatprg_args = '--style="{BasedOnStyle: Google, ColumnLimit: 100}" --fallback-style=LLVM'
+    ```
+
+- JavaScript with Prettier:
+
+    ```vim
+    let b:formatprg = 'prettier'
+    let b:formatprg_args = '--log-level=error --no-color --single-quote --trailing-comma=all'
+    ```
+
+- JavaScript with Biome:
+
+    ```vim
+    let b:formatprg = 'biome'
+    let b:formatprg_args = '--format-with-errors=true --colors=off'
+    ```
+
+- BibTeX with bibtex-tidy:
+
+    ```vim
+    let b:formatprg = 'bibtex-tidy'
+    let b:formatprg_args = '--quiet --merge combine --strip-enclosing-braces --encode-urls'
+    ```
+
+Tip: add `unlet! b:formatprg_args` to `b:undo_ftplugin` to clean up buffer-local overrides.
+
 # Contributing
 
 Contributions are welcome! If you have a configuration for a new file type or improvements to existing configurations, please open a pull request.

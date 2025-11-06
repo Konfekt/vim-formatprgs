@@ -10,7 +10,8 @@ if b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang-for
   function! s:ClangFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
-    let cmd = 'clang-format --style=file --fallback-style=Google ' .
+    let cmd = 'clang-format ' .
+            \ get(b:, 'formatprg_args', '--style=file --fallback-style=Google') . ' ' .
             \ '--assume-filename=' . (filereadable(expand('%')) ? expand('%:p:S') : 'stdin.java') .
             \  printf(' --lines=%d:%d -', start, end)
     let view  = winsaveview()
@@ -29,15 +30,16 @@ elseif b:formatprg ==# 'uncrustify' || empty(b:formatprg) && executable('uncrust
     let s:ft = s:cfg_home . s:slash . 'uncrustify' . s:slash . &filetype . '.cfg'
     unlet s:slash s:cfg_home
   endif
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'uncrustify -q -l C ' .
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'uncrustify ' .
+        \ get(b:, 'formatprg_args', '-q -l C') . ' ' .
         \ (&textwidth > 0 ? ' --set code_width=' . &textwidth . ' --set cmt_width=' . &textwidth : '') .
         \ ' --set indent_columns=' . shiftwidth() . (&expandtab ? ' --set indent_with_tabs=0' : '') .
         \ (filereadable(expand('%')) ? ' --assume ' . expand('%:p:S') : '') .
         \ (filereadable(s:ft) ? (' -c ' . shellescape(s:ft)) : '') .
         \ ' -'
 elseif b:formatprg ==# 'astyle' || empty(b:formatprg) && executable('astyle')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg='astyle --quiet --mode=java --style=google ' .
-              \ ' --pad-oper --pad-header --unpad-paren --align-pointer=name --align-reference=name --add-brackets --suffix=none ' .
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg='astyle ' .
+              \ get(b:, 'formatprg_args', '--quiet --mode=java --style=google --pad-oper --pad-header --unpad-paren --align-pointer=name --align-reference=name --add-brackets --suffix=none') . ' ' .
               \ (&textwidth > 0 ? ' --max-code-length=' . &textwidth : '') .
               \ ' --indent=spaces=' . shiftwidth() . (&expandtab ? ' --convert-tabs' : '') .
               \ ' -'

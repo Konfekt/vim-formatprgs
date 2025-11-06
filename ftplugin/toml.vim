@@ -1,4 +1,4 @@
-if !executable('tombi') | finish | endif 
+if !executable('tombi') | finish | endif
 
 augroup formatprgsToml
   autocmd! * <buffer>
@@ -8,7 +8,8 @@ augroup formatprgsToml
 augroup END
 
 " See https://github.com/tombi-toml/tombi/pull/1044#issuecomment-3465851563
-let &l:formatprg = printf('tombi format%s - %s',
+let &l:formatprg = printf('tombi format %s%s - %s',
+      \ get(b:, 'formatprg_args', ''),
       \ filereadable(expand('%')) ? ' --stdin-filename ' . expand('%:p:S') . '' : '',
       \ has('win32') ? '2>nul' : '2>/dev/null')
 

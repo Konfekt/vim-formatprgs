@@ -13,7 +13,7 @@ setlocal cinoptions+=+0
 if empty(&l:equalprg) && executable('par')
   autocmd BufWinEnter <buffer> ++once
         \ let s:tw = &textwidth > 0 ? &textwidth : 80 |
-        \ let &l:equalprg = join(map(['par','e','g',printf('%dp',s:tw),'w'.s:tw,'rTbgqR','B=.,?_A_a_0','Q=_s>'], 'shellescape(v:val, 1)'), ' ') |
+        \ let &l:equalprg = 'par ' . get(b:, 'formatprg_args', join(map(['e','g',printf('%dp',s:tw),'w'.s:tw,'rTbgqR','B=.,?_A_a_0','Q=_s>'], 'shellescape(v:val, 1)'), ' ')) |
         \ unlet s:tw
 endif
 
