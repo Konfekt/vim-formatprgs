@@ -7,14 +7,8 @@ augroup formatprgsJavaScript
   endif
 augroup END
 
-if executable('biome')
-  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
-        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
-        \ '--indent-width=' . shiftwidth() . ' ' .
-        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
-elseif executable('prettier')
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
+if b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier')
   let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' .expand('%:p:S'))) : ''
   if v:shell_error | let b:prettier_config = '' | endif
   let s:cmd = 'prettier --log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=babel'
@@ -38,12 +32,19 @@ elseif executable('prettier')
     endtry
   endfunction
   setlocal formatexpr=<SID>PrettierFormatexpr()
-elseif executable('clang-format')
+elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
+  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
+        \ '--indent-width=' . shiftwidth() . ' ' .
+        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
+elseif b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang-format')
   function! s:ClangFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
     let cmd = 'clang-format --style=file --fallback-style=Google ' .
-            \ '--assume-filename=' . (filereadable(expand('%')) ? expand('%:p:S') : 'stdin.c') .
+            \ '--assume-filename=' . (filereadable(expand('%')) ? expand('%:p:S') : 'stdin.js') .
             \  printf(' --lines=%d:%d -', start, end)
     let view  = winsaveview()
     try

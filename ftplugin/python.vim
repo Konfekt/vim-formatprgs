@@ -5,7 +5,8 @@ augroup formatprgsPython
   endif
 augroup END
 
-if executable('ruff')
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
+if b:formatprg ==# 'ruff' || empty(b:formatprg) && executable('ruff')
   let s:cmd = 'ruff format --quiet --preview '
   function! s:RuffFormatexpr() abort
     let start = v:lnum
@@ -23,9 +24,10 @@ if executable('ruff')
   endfunction
 
   setlocal formatexpr=<SID>RuffFormatexpr()
-elseif executable('black-macchiato')
+elseif b:formatprg ==# 'black-macchiato' || empty(b:formatprg) && executable('black-macchiato')
   let &l:formatprg = 'black-macchiato -'
-elseif executable('yapf3') || executable('yapf')
+elseif  (b:formatprg ==# 'yapf' || empty(b:formatprg) && executable('yapf'))  ||
+      \ (b:formatprg ==# 'yapf3' || empty(b:formatprg) && executable('yapf3'))
   let s:cmd = (executable('yapf3') ? 'yapf3' :'yapf') . ' --quiet'
   function! s:YapfFormatexpr() abort
     let start = v:lnum
@@ -40,7 +42,7 @@ elseif executable('yapf3') || executable('yapf')
   endfunction
 
   setlocal formatexpr=<SID>YapfFormatexpr()
-elseif executable('autopep8')
+elseif b:formatprg ==# 'autopep8' || empty(b:formatprg) && executable('autopep8')
   let s:cmd = 'autopep8 --quiet --aggressive --experimental '
   function! s:YapfFormatexpr() abort
     let start = v:lnum

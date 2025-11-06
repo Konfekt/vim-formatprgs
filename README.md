@@ -13,9 +13,9 @@ While the gq operator (`:help gq`) defaults to formatting C (`:help C-indenting`
 
 What `gq` with default settings does, C-style formatting, is more conveniently achieved by `gw` (`:help gw`) keeping cursor position (so that both operators become complimentary, instead of `gq` rather redundant).
 
-With suitable `'formatlistpat'` and `'formatoptions` such as 
+With suitable `'formatlistpat'` and `'formatoptions'` such as 
 
-```
+```vim
 set formatoptions+=nw
 set formatlistpat=\\C^\\s*\\([\\[({]\\\?\\([0-9]\\+\\\|[iIvVxXlLcCdDmM]\\+\\\|[a-zA-Z]\\)[\\]:.)}]\\s\\+\\\|[-+o*>]\\s\\+\\)\\+
 ```
@@ -90,7 +90,7 @@ To use these configuration files, copy them to your Vim configuration directory 
 
 For example, to install the `sh.vim` configuration:
 
-```sh
+```bash
 mkdir -p ~/.vim/ftplugin
 cp sh.vim ~/.vim/ftplugin/
 ```
@@ -98,11 +98,42 @@ cp sh.vim ~/.vim/ftplugin/
 Repeat the above steps for each file type configuration you want to use.
 
 You may also use a plug-in manager such as [vim-plug](https://github.com/junegunn/vim-plug). 
-In this case, add `Plug 'konfekt/vim-formatprgs` to your `vimrc` to use them.
+In this case, add `Plug 'konfekt/vim-formatprgs'` to your `vimrc` to use them.
 
 # Usage
 
 Once installed, Vim will automatically use the specified formatter when you use the `gq` command (see `:help gq`) in a buffer of the corresponding file type.
+
+# Forcing a specific formatter with `b:formatprg`
+
+Set the buffer-local variable `b:formatprg` to select a known formatter for a filetype.
+The ftplugin will honor this if the executable is found on `$PATH`, otherwise it falls back to auto-detection.
+
+Examples:
+
+- C: `let b:formatprg = 'clang-format'` or `'uncrustify'` or `'astyle'`.
+- JavaScript: `let b:formatprg = 'prettier'` or `'biome'` or `'clang-format'`.
+
+Recommended ways to set it:
+
+- Per filetype (user ftplugin):
+    - `~/.vim/ftplugin/c.vim` with `let b:formatprg = 'uncrustify'`
+    - `~/.vim/ftplugin/javascript.vim` with `let b:formatprg = 'prettier'`
+
+- Global autocommand:
+    ```vim
+    augroup MyFormatPrg
+        autocmd!
+        autocmd FileType c,cpp let b:formatprg = 'clang-format'
+        autocmd FileType javascript,typescript let b:formatprg = 'prettier'
+    augroup END
+    ```
+
+Notes:
+
+- `b:formatprg` is a selector for this plugin, not Vim's `'formatprg'` option.
+- The plugin configures `'formatexpr'` or `'formatprg'` accordingly.
+- If using LSP-based formatting via `'formatexpr'`, that takes precedence over `'formatprg'`; consider separate mappings to access both.
 
 # Contributing
 

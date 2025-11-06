@@ -5,23 +5,17 @@ augroup formatprgsVue
   endif
 augroup END
 
-if executable('biome')
-  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
-        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
-        \ '--indent-width=' . shiftwidth() . ' ' .
-        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
-elseif executable('prettier')
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
+if b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier')
   let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' . expand('%:p:S'))) : ''
   if v:shell_error | let b:prettier_config = '' | endif
-  let s:cmd = 'prettier --log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=' . &filetype
+  let s:cmd = 'prettier --log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=' . &filetype . ' --vue-indent-script-and-style '
   function! s:PrettierFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
     let start_byte = line2byte(start)
     let end_byte   = line2byte(end + 1) - 1
-    let cmd = s:cmd . ' --vue-indent-script-and-style ' .
+    let cmd = s:cmd .
           \ (filereadable(b:prettier_config) ? '--config ' . shellescape(b:prettier_config) . ' ' : '') .
           \ (&textwidth > 0 ? '--print-width=' . &textwidth . ' ' : '') .
           \ '--tab-width=' . shiftwidth() . ' ' .
@@ -37,6 +31,13 @@ elseif executable('prettier')
     endtry
   endfunction
   setlocal formatexpr=<SID>PrettierFormatexpr()
+elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
+  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
+        \ '--indent-width=' . shiftwidth() . ' ' .
+        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

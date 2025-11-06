@@ -7,7 +7,8 @@ augroup formatprgsHTML
   endif
 augroup END
 
-if executable('tidy')
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
+if b:formatprg ==# 'tidy' || empty(b:formatprg) && executable('tidy')
   " See https://stackoverflow.com/questions/7151180/use-html-tidy-to-just-indent-html-code
   autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'tidy ' .
         \ ((&filetype ==# 'xhtml') ? '-xml ' : '') . '-quiet ' .
@@ -15,17 +16,10 @@ if executable('tidy')
         \ '-indent ' . (&expandtab ? '' : '--indent-with-tabs ') . '--indent-spaces ' . shiftwidth()
         " \ (has('win32') ? ' 2>nul' : ' 2>/dev/null') .
   compiler tidy
-elseif executable('html-beautify')
+elseif b:formatprg ==# 'html-beautify' || empty(b:formatprg) && executable('html-beautify')
   " html-beautify is in js-beautify node package
   " npm -g install js-beautify
   autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'html-beautify ' . (&expandtab ? '' : '--indent-with-tabs ') . '-s ' . shiftwidth() . ' -f -'
-elseif executable('biome')
-  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
-        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
-        \ '--indent-width=' . shiftwidth() . ' ' .
-        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
 elseif executable('prettier')
   let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' .expand('%:p:S'))) : ''
   if v:shell_error | let b:prettier_config = '' | endif
@@ -51,6 +45,13 @@ elseif executable('prettier')
     endtry
   endfunction
   setlocal formatexpr=<SID>PrettierFormatexpr()
+elseif executable('biome')
+  let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
+  autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
+        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
+        \ '--indent-width=' . shiftwidth() . ' ' .
+        \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
 endif
 
 " Cleanly undo buffer-local changes when leaving this filetype

@@ -5,16 +5,17 @@ augroup formatprgsSQL
   endif
 augroup END
 
-if executable('sql-formatter')
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
+if b:formatprg ==# 'sql-formatter' || empty(b:formatprg) && executable('sql-formatter')
   " npm install -g sql-formatter
   " set indent width in a JSON file passed by --config
   " https://github.com/sql-formatter-org/sql-formatter?tab=readme-ov-file#configuration-options
   let &l:formatprg='sql-formatter --language postgresql'
 " Ships with sqlparse
-elseif executable('sqlformat')
+elseif b:formatprg ==# 'sqlformat' || empty(b:formatprg) && executable('sqlformat')
   autocmd BufWinEnter <buffer> ++once let &l:formatprg='sqlformat --reindent_aligned --indent_width=' . shiftwidth() . ' -'
 " From https://github.com/balling-dev/sleek/releases/
-elseif executable('sleek')
+elseif b:formatprg ==# 'sleek' || empty(b:formatprg) && executable('sleek')
   autocmd BufWinEnter <buffer> ++once let &l:formatprg='sleek --indent-spaces=' . shiftwidth() . ' -'
 endif
 

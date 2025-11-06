@@ -1,11 +1,12 @@
 if exists('b:did_ftplugin') | finish | endif
 let b:did_ftplugin = 1
 
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if !exists('g:json_formatprg')
-  if executable('jq')
+  if b:formatprg ==# 'jq' || empty(b:formatprg) && executable('jq')
     let g:json_formatprg = 'jq'
   elseif has('win32') || !empty($WSL_DISTRO_NAME)
-    if executable('jq.exe')
+    if b:formatprg ==# 'jq.exe' || empty(b:formatprg) && executable('jq.exe')
       let g:json_formatprg = 'jq.exe'
     elseif executable('jq-win64.exe')
       let g:json_formatprg = 'jq-win64.exe'
@@ -32,14 +33,14 @@ if !empty(g:json_formatprg)
     autocmd BufWinEnter <buffer> ++once let &l:formatprg = g:json_formatprg . ' ' .
           \ (&expandtab ? '' : '--tab') . (' --indent ' . shiftwidth()) . ' "."'
   augroup END
-elseif executable('biome')
+elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
   let s:cmd = 'biome format --write --format-with-errors=true --colors=off '
   autocmd BufWinEnter <buffer> ++once let &l:formatprg = s:cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
-elseif executable('prettier')
+elseif b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier')
   let b:prettier_config = isdirectory(expand('%:p')) ? trim(system('prettier --find-config-path ' .expand('%:p:S'))) : ''
   if v:shell_error | let b:prettier_config = '' | endif
   function! s:PrettierFormatexpr() abort

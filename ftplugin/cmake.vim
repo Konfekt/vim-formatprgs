@@ -5,14 +5,16 @@ augroup formatprgsCMake
   endif
 augroup END
 
-if executable('cmake-format')
+if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
+
+if b:formatprg ==# 'cmake-format' || empty(b:formatprg) && executable('cmake-format')
   autocmd BufWinEnter <buffer> ++once
         \ let &l:formatprg='cmake-format'
         \ . (&textwidth > 0 ? ' --line-width=' . &textwidth : '')
         \ . ' --tab-size=' . shiftwidth()
         \ . (&expandtab ? '' : ' --use-tabchars')
         \ . ' -'
-elseif executable('neocmakelsp')
+elseif b:formatprg ==# 'neocmakelsp' || empty(b:formatprg) && executable('neocmakelsp')
   setlocal formatprg=neocmakelsp\ format
 else
   " No formatter available; ensure we don't inherit a stale formatprg
