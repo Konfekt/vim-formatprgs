@@ -44,10 +44,24 @@ elseif b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang
   function! s:ClangFormatexpr() abort
     let start = v:lnum
     let end   = v:lnum + v:count - 1
+    " Detect and prefer a project style file near the current buffer.
+    if !exists('b:cfg')
+      let b:cfg = findfile('.clang-format', '.;')
+      if empty(b:cfg) | let b:cfg = findfile('_clang-format', '.;') | endif
+    endif
+    if !empty(b:cfg)
+      let default_style = '--style=file --fallback-style=Chromium'
+    else
+      let default_style =
+            \ printf('--style="{BasedOnStyle: Chromium, ColumnLimit: %d, IndentWidth: %d, TabWidth: %d, UseTab: %s}"',
+            \        &textwidth, shiftwidth(), &tabstop, (&expandtab ? 'Never' : 'ForIndentation'))
+    endif
+
     let cmd = 'clang-format ' .
-            \ get(b:, 'formatprg_args', '--style=file --fallback-style=Google') . ' ' .
-            \ '--assume-filename=' . (filereadable(expand('%')) ? expand('%:p:S') : 'stdin.js') .
-            \  printf(' --lines=%d:%d -', start, end)
+          \ get(b:, 'formatprg_args', default_style) . ' ' .
+          \ '--assume-filename=' . shellescape(filereadable(expand('%'))
+          \     ? expand('%:p') : 'stdin.js') . ' ' .
+          \ printf('--lines=%d:%d -', start, end)
     let view  = winsaveview()
     try
       " exe start ',' end '!' cmd
