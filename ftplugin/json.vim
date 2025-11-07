@@ -70,4 +70,4 @@ elseif b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier'
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal cinoptions< formatprg< formatexpr< | unlet! b:prettier_config | silent! autocmd! formatprgsJSON * <buffer>'
+      \ 'setlocal cinoptions< formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args b:prettier_config | silent! autocmd! formatprgsJSON * <buffer>'

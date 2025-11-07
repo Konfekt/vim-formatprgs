@@ -23,4 +23,5 @@ setlocal comments-=mb:* comments-=fb:-
 setlocal formatlistpat=\\C^\\s*\\([\\[({]\\\?\\([0-9]\\+\\\|[iIvVxXlLcCdDmM]\\+\\\|[a-zA-Z]\\)[\\]:.)}]\\s\\+\\\|[-+o*>]\\s\\+\\)\\+
 setlocal formatoptions+=nw
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal cinoptions< formatprg< equalprg< commentstring< comments< formatlistpat< | silent! autocmd! formatprgsMail * <buffer>'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+      \ 'setlocal cinoptions< equalprg< commentstring< comments< formatlistpat< | unlet! b:formatprg_args | silent! autocmd! formatprgsMail * <buffer>'

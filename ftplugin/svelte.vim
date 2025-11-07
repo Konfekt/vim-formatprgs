@@ -15,4 +15,4 @@ autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'biome format ' .
       \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal formatprg< | silent! autocmd! formatprgsSvelte * <buffer>'
+      \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! autocmd! formatprgsSvelte * <buffer>'

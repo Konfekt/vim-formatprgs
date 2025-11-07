@@ -62,4 +62,4 @@ elseif b:formatprg ==# 'autopep8' || empty(b:formatprg) && executable('autopep8'
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal formatprg< formatexpr< | silent! autocmd! formatprgsPython * <buffer>'
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args | silent! autocmd! formatprgsPython * <buffer>'

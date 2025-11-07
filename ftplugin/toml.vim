@@ -14,5 +14,5 @@ let &l:formatprg = printf('tombi format %s%s - %s',
       \ has('win32') ? '2>nul' : '2>/dev/null')
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-    \ 'setlocal formatprg< | silent! autocmd! formatprgsToml * <buffer>'
+    \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! autocmd! formatprgsToml * <buffer>'
 

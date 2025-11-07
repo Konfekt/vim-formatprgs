@@ -162,8 +162,6 @@ Examples:
     let b:formatprg_args = '--quiet --merge combine --strip-enclosing-braces --encode-urls'
     ```
 
-Tip: add `unlet! b:formatprg_args` to `b:undo_ftplugin` to clean up buffer-local overrides.
-
 # Installation
 
 To use these configuration files, copy them to your Vim configuration directory (usually `~/.vim/ftplugin/`).

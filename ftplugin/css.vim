@@ -41,4 +41,4 @@ elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:prettier_config | silent! autocmd! formatprgsCss * <buffer>'
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args b:prettier_config | silent! autocmd! formatprgsCss * <buffer>'

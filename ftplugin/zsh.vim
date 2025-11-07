@@ -20,5 +20,6 @@ endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '')
       \ . ' setlocal formatprg<'
+      \ . '|unlet! b:formatprg_args'
       \ . '|silent! autocmd! formatprgsZsh * <buffer>'
       \ . '|silent! nunmap <buffer> gqqq'

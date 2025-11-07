@@ -59,4 +59,5 @@ elseif b:formatprg ==# 'astyle' || empty(b:formatprg) && executable('astyle')
               \ ' -'
 endif
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatprg< formatexpr< | silent! autocmd! formatprgsJava * <buffer>'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_args | silent! autocmd! formatprgsJava * <buffer>'

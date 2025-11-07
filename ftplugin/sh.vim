@@ -16,4 +16,5 @@ if executable('format_shell_cmd.py')
   nnoremap <silent> <buffer> gqgq :<C-U>silent .!format_shell_cmd.py<CR>
 endif
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatprg< | silent! autocmd! formatprgsSh * <buffer> | silent! nunmap <buffer> gqgq'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+      \ 'setlocal formatprg< | unlet! b:formatprg_cmd b:formatprg_args | silent! autocmd! formatprgsSh * <buffer> | silent! nunmap <buffer> gqgq'

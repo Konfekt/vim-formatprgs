@@ -17,4 +17,4 @@ elseif executable('prettybib.py') || executable('prettybib')
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal formatprg< | silent! autocmd! formatprgsBib * <buffer>'
+      \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! autocmd! formatprgsBib * <buffer>'

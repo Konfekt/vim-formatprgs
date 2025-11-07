@@ -30,4 +30,5 @@ endfunction
 
 setlocal formatexpr=<SID>StyluaFormatexpr()
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatprg< | unlet! b:formatprg_prettier b:formatprg_args | silent! autocmd! formatprgsLua ShellFilterPost <buffer>'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg_args | silent! autocmd! formatprgsLua * <buffer>'

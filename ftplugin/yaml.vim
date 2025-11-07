@@ -31,4 +31,5 @@ augroup formatprgsYaml
   setlocal formatexpr=<SID>PrettierFormatexpr()
 augroup END
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') . 'setlocal formatexpr< | unlet! b:prettier_config | silent! autocmd! formatprgsYaml * <buffer>'
+let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
+      \ 'setlocal formatexpr< | unlet! b:formatprg_cmd b:formatprg_args b:prettier_config | silent! autocmd! formatprgsYaml * <buffer>'

@@ -26,4 +26,5 @@ endif
 " Ensure settings are undone cleanly if filetype changes
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '')
       \ . 'setlocal formatprg<'
+      \ . ' | unlet! b:formatprg b:formatprg_args'
       \ . ' | silent! autocmd! formatprgsCMake * <buffer>'

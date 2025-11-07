@@ -10,4 +10,4 @@ endif
 let &l:formatprg = 'tex-fmt ' . get(b:, 'formatprg_args', '--print --quiet --stdin')
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-    \ 'setlocal formatprg< | silent! autocmd! formatprgsTex * <buffer>'
+    \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! autocmd! formatprgsTex * <buffer>'

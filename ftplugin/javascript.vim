@@ -74,4 +74,4 @@ elseif b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg_prettier | silent! autocmd! formatprgsJavaScript * <buffer>'
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args b:formatprg_prettier | silent! autocmd! formatprgsJavaScript * <buffer>'

@@ -59,4 +59,4 @@ endif
 
 " Cleanly undo buffer-local changes when leaving this filetype
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '')
-      \ . 'setlocal formatprg< formatexpr< | silent! augroup formatprgsHTML | autocmd! BufWinEnter <buffer> | if exists(''##ShellFilterPost'') | autocmd! ShellFilterPost <buffer> | endif | augroup END | unlet! b:prettier_config'
+      \ . 'setlocal formatprg< formatexpr< | silent! autocmd! formatprgsHTML * <buffer> | unlet! b:formatprg b:formatprg_cmd b:formatprg_args b:prettier_config'

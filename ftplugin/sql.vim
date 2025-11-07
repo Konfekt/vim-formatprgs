@@ -20,4 +20,4 @@ elseif b:formatprg ==# 'sleek' || empty(b:formatprg) && executable('sleek')
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-    \ 'setlocal formatprg< | silent! autocmd! formatprgsSQL * <buffer>'
+    \ 'setlocal formatprg< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args | silent! autocmd! formatprgsSQL * <buffer>'
