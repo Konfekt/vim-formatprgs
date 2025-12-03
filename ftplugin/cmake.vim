@@ -10,7 +10,7 @@ if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'cmake-format' || empty(b:formatprg) && executable('cmake-format')
   autocmd BufWinEnter <buffer> ++once
         \ let &l:formatprg='cmake-format '
-        \ . get(b:, 'formatprg_args', '') . ' ' .
+        \ . get(b:, 'formatprg_args', '') . ' '
         \ . (&textwidth > 0 ? ' --line-width=' . &textwidth : '')
         \ . ' --tab-size=' . shiftwidth()
         \ . (&expandtab ? '' : ' --use-tabchars')
