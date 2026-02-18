@@ -13,9 +13,8 @@ if b:formatprg ==# 'tidy' || empty(b:formatprg) && executable('tidy')
   autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'tidy ' .
         \ ((&filetype ==# 'xhtml') ? '-xml ' : '') .
         \ get(b:, 'formatprg_args', '--quiet --show-errors 0 -bare --show-body-only auto -wrap 0 -utf8') . ' ' .
-        \ '-indent ' . (&expandtab ? '' : '--indent-with-tabs ') . '--indent-spaces ' . shiftwidth()
-        " \ (has('win32') ? ' 2>nul' : ' 2>/dev/null') .
-  compiler tidy
+        \ '-indent ' . (&expandtab ? '' : '--indent-with-tabs ') . '--indent-spaces ' . shiftwidth() .
+        \ (has('win32') ? ' || exit /b 0' : ' || true')
 elseif b:formatprg ==# 'html-beautify' || empty(b:formatprg) && executable('html-beautify')
   " html-beautify is in js-beautify node package
   " npm -g install js-beautify
