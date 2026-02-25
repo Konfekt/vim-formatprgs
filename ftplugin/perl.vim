@@ -43,5 +43,11 @@ if b:formatprg ==# 'perltidy' || empty(b:formatprg) && executable('perltidy')
   autocmd formatprgsPerl BufWinEnter <buffer> ++once let &formatprg = <SID>PerltidyBuildCmd()
 endif
 
+if exists('#formatprgsPerl#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsPerl BufWinEnter <buffer>
+  endif
+endif
+
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
       \ 'setlocal formatprg< | unlet! b:formatprg b:formatprg_args b:cfg | silent! autocmd! formatprgsPerl * <buffer>'

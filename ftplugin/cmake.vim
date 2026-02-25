@@ -8,7 +8,7 @@ augroup END
 if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 
 if b:formatprg ==# 'cmake-format' || empty(b:formatprg) && executable('cmake-format')
-  autocmd BufWinEnter <buffer> ++once
+  autocmd formatprgsCMake BufWinEnter <buffer> ++once
         \ let &l:formatprg='cmake-format '
         \ . get(b:, 'formatprg_args', '') . ' '
         \ . (&textwidth > 0 ? ' --line-width=' . &textwidth : '')
@@ -21,6 +21,12 @@ elseif b:formatprg ==# 'neocmakelsp' || empty(b:formatprg) && executable('neocma
 else
   " No formatter available; ensure we don't inherit a stale formatprg
   setlocal formatprg=
+endif
+
+if exists('#formatprgsCMake#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsCMake BufWinEnter <buffer>
+  endif
 endif
 
 " Ensure settings are undone cleanly if filetype changes

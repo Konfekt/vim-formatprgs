@@ -6,9 +6,15 @@ augroup formatprgsSh
 augroup END
 
 if executable('shfmt')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'shfmt ' .
+  autocmd formatprgsSh BufWinEnter <buffer> ++once let &l:formatprg = 'shfmt ' .
       \ get(b:, 'formatprg_args', '--space-redirects --case-indent --simplify') .
       \ ' --indent ' . (&expandtab ? shiftwidth() : 0)
+endif
+
+if exists('#formatprgsSh#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsSh BufWinEnter <buffer>
+  endif
 endif
 
 if executable('format_shell_cmd.py')

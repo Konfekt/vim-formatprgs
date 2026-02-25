@@ -23,21 +23,25 @@ endif
 " see https://stackoverflow.com/questions/21413120/how-can-i-get-gg-g-in-vim-to-ignore-a-comma/21413701#21413701
 setlocal cinoptions+=+0
 
+augroup formatprgsJSON
+  autocmd! * <buffer>
+  if exists('##ShellFilterPost')
+    autocmd ShellFilterPost <buffer> if v:shell_error | echohl WarningMsg | echomsg printf('shell filter returned error %d, undoing changes', v:shell_error) | echohl None | silent! undo | endif
+  endif
+augroup END
+
 if !empty(g:json_formatprg)
   " For vim9script fallback see https://stackoverflow.com/questions/26214156/how-to-auto-format-json-on-save-in-vim
-  augroup formatprgsJSON
-    autocmd! * <buffer>
-    if exists('##ShellFilterPost')
-      autocmd ShellFilterPost <buffer> if v:shell_error | echohl WarningMsg | echomsg printf('shell filter returned error %d, undoing changes', v:shell_error) | echohl None | silent! undo | endif
-    endif
-    autocmd BufWinEnter <buffer> ++once let &l:formatprg = g:json_formatprg . ' ' .
+  autocmd formatprgsJSON BufWinEnter <buffer> ++once let &l:formatprg = g:json_formatprg . ' ' .
           \ get(b:, 'formatprg_args', '') .
           \ (&expandtab ? '' : ' --tab') .
           \ (' --indent ' . shiftwidth()) . ' "."'
-  augroup END
+  if bufwinnr('%') != -1 && exists('#formatprgsJSON#BufWinEnter#<buffer>')
+    doautocmd <nomodeline> formatprgsJSON BufWinEnter <buffer>
+  endif
 elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
   let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
+  autocmd formatprgsJSON BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
@@ -67,6 +71,14 @@ elseif b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier'
     endtry
   endfunction
   setlocal formatexpr=<SID>PrettierFormatexpr()
+endif
+
+" Run the BufWinEnter initializer immediately when ftplugin loads in an
+" already-visible buffer (e.g. :setfiletype json).
+if exists('#formatprgsJSON#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsJSON BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

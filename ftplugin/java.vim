@@ -44,7 +44,7 @@ elseif b:formatprg ==# 'uncrustify' || empty(b:formatprg) && executable('uncrust
     let s:ft = s:cfg_home . s:slash . 'uncrustify' . s:slash . &filetype . '.cfg'
     unlet s:slash s:cfg_home
   endif
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'uncrustify ' .
+  autocmd formatprgsJava BufWinEnter <buffer> ++once let &l:formatprg = 'uncrustify ' .
         \ get(b:, 'formatprg_args', '-q -l C') . ' ' .
         \ (&textwidth > 0 ? ' --set code_width=' . &textwidth . ' --set cmt_width=' . &textwidth : '') .
         \ ' --set indent_columns=' . shiftwidth() . (&expandtab ? ' --set indent_with_tabs=0' : '') .
@@ -52,11 +52,17 @@ elseif b:formatprg ==# 'uncrustify' || empty(b:formatprg) && executable('uncrust
         \ (filereadable(s:ft) ? (' -c ' . shellescape(s:ft)) : '') .
         \ ' -'
 elseif b:formatprg ==# 'astyle' || empty(b:formatprg) && executable('astyle')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg='astyle ' .
+  autocmd formatprgsJava BufWinEnter <buffer> ++once let &l:formatprg='astyle ' .
               \ get(b:, 'formatprg_args', '--quiet --mode=java --style=google --pad-oper --pad-header --unpad-paren --align-pointer=name --align-reference=name --add-brackets --suffix=none') . ' ' .
               \ (&textwidth > 0 ? ' --max-code-length=' . &textwidth : '') .
               \ ' --indent=spaces=' . shiftwidth() . (&expandtab ? ' --convert-tabs' : '') .
               \ ' -'
+endif
+
+if exists('#formatprgsJava#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsJava BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

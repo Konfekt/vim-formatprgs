@@ -13,10 +13,16 @@ if b:formatprg ==# 'sql-formatter' || empty(b:formatprg) && executable('sql-form
   let &l:formatprg='sql-formatter ' . get(b:, 'formatprg_args', '--language postgresql')
 " Ships with sqlparse
 elseif b:formatprg ==# 'sqlformat' || empty(b:formatprg) && executable('sqlformat')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg='sqlformat ' . get(b:, 'formatprg_args', '--reindent_aligned') . ' --indent_width=' . shiftwidth() . ' -'
+  autocmd formatprgsSQL BufWinEnter <buffer> ++once let &l:formatprg='sqlformat ' . get(b:, 'formatprg_args', '--reindent_aligned') . ' --indent_width=' . shiftwidth() . ' -'
 " From https://github.com/balling-dev/sleek/releases/
 elseif b:formatprg ==# 'sleek' || empty(b:formatprg) && executable('sleek')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg='sleek ' . get(b:, 'formatprg_args', '') . ' --indent-spaces=' . shiftwidth() . ' -'
+  autocmd formatprgsSQL BufWinEnter <buffer> ++once let &l:formatprg='sleek ' . get(b:, 'formatprg_args', '') . ' --indent-spaces=' . shiftwidth() . ' -'
+endif
+
+if exists('#formatprgsSQL#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsSQL BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

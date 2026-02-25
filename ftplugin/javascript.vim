@@ -34,7 +34,7 @@ if b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier')
   setlocal formatexpr=<SID>PrettierFormatexpr()
 elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
   let b:formatprg_cmd = 'biome format'
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
+  autocmd formatprgsJavaScript BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off') . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
@@ -71,6 +71,12 @@ elseif b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang
     endtry
   endfunction
   setlocal formatexpr=<SID>ClangFormatexpr()
+endif
+
+if exists('#formatprgsJavaScript#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsJavaScript BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

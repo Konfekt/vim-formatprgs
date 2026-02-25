@@ -7,13 +7,13 @@ augroup END
 
 if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'xmllint' || empty(b:formatprg) && executable('xmllint')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = (has('win32')
+  autocmd formatprgsXML BufWinEnter <buffer> ++once let &l:formatprg = (has('win32')
         \ ? 'cmd /c "set XMLLINT_INDENT=' . shiftwidth() . '&&' : 'XMLLINT_INDENT=' . shiftwidth()) .
         \ ' xmllint --output - ' . get(b:, 'formatprg_args', '--format --recover --encode UTF-8 --nonet') .
         \ (has('win32') ? '"' : '')
 elseif b:formatprg ==# 'tidy' || empty(b:formatprg) && executable('tidy')
   " See https://stackoverflow.com/questions/7151180/use-html-tidy-to-just-indent-html-code
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'tidy -xml ' .
+  autocmd formatprgsXML BufWinEnter <buffer> ++once let &l:formatprg = 'tidy -xml ' .
         \ get(b:, 'formatprg_args', '--quiet --show-errors 0 -bare --show-body-only auto -wrap 0 -utf8') . ' ' .
         \ '-indent ' . (&expandtab ? '' : '--indent-with-tabs ') . '--indent-spaces ' . shiftwidth()
         " \ (has('win32') ? ' 2>nul' : ' 2>/dev/null') .
@@ -43,6 +43,12 @@ elseif b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier'
     endtry
   endfunction
   setlocal formatexpr=<SID>PrettierFormatexpr()
+endif
+
+if exists('#formatprgsXML#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsXML BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

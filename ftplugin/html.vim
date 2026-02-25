@@ -10,7 +10,7 @@ augroup END
 if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'tidy' || empty(b:formatprg) && executable('tidy')
   " See https://stackoverflow.com/questions/7151180/use-html-tidy-to-just-indent-html-code
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'tidy ' .
+  autocmd formatprgsHTML BufWinEnter <buffer> ++once let &l:formatprg = 'tidy ' .
         \ ((&filetype ==# 'xhtml') ? '-xml ' : '') .
         \ get(b:, 'formatprg_args', '--quiet --show-errors 0 -bare --show-body-only auto -wrap 0 -utf8') . ' ' .
         \ '-indent ' . (&expandtab ? '' : '--indent-with-tabs ') . '--indent-spaces ' . shiftwidth() .
@@ -18,7 +18,7 @@ if b:formatprg ==# 'tidy' || empty(b:formatprg) && executable('tidy')
 elseif b:formatprg ==# 'html-beautify' || empty(b:formatprg) && executable('html-beautify')
   " html-beautify is in js-beautify node package
   " npm -g install js-beautify
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'html-beautify ' .
+  autocmd formatprgsHTML BufWinEnter <buffer> ++once let &l:formatprg = 'html-beautify ' .
         \ get(b:, 'formatprg_args', '') . ' ' .
         \ (&expandtab ? '' : '--indent-with-tabs ') . '-s ' . shiftwidth() . ' -f -'
 elseif executable('prettier')
@@ -49,11 +49,17 @@ elseif executable('prettier')
   setlocal formatexpr=<SID>PrettierFormatexpr()
 elseif executable('biome')
   let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
+  autocmd formatprgsHTML BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
+endif
+
+if exists('#formatprgsHTML#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsHTML BufWinEnter <buffer>
+  endif
 endif
 
 " Cleanly undo buffer-local changes when leaving this filetype

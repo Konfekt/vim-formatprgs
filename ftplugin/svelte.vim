@@ -7,12 +7,18 @@ augroup formatprgsSvelte
   endif
 augroup END
 
-autocmd BufWinEnter <buffer> ++once let &l:formatprg = 'biome format ' .
+autocmd formatprgsSvelte BufWinEnter <buffer> ++once let &l:formatprg = 'biome format ' .
       \ get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off') . ' ' .
       \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
       \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
       \ '--indent-width=' . shiftwidth() . ' ' .
       \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
+
+if exists('#formatprgsSvelte#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsSvelte BufWinEnter <buffer>
+  endif
+endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
       \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! autocmd! formatprgsSvelte * <buffer>'

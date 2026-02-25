@@ -10,7 +10,7 @@ augroup END
 if !executable(get(b:, 'formatprg', '')) | let b:formatprg = '' | endif
 if b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
   let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off')
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
+  autocmd formatprgsTypeScript BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
@@ -70,6 +70,12 @@ elseif b:formatprg ==# 'clang-format' || empty(b:formatprg) && executable('clang
     endtry
   endfunction
   setlocal formatexpr=<SID>ClangFormatexpr()
+endif
+
+if exists('#formatprgsTypeScript#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsTypeScript BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .

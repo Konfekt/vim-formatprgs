@@ -33,11 +33,17 @@ if b:formatprg ==# 'prettier' || empty(b:formatprg) && executable('prettier')
   setlocal formatexpr=<SID>PrettierFormatexpr()
 elseif b:formatprg ==# 'biome' || empty(b:formatprg) && executable('biome')
   let b:formatprg_cmd = 'biome format ' . get(b:, 'formatprg_args', '--write --format-with-errors=true --colors=off') . ' '
-  autocmd BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
+  autocmd formatprgsVue BufWinEnter <buffer> ++once let &l:formatprg = b:formatprg_cmd . ' ' .
         \ '--stdin-file-path=' .expand('%:p:S') . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
+endif
+
+if exists('#formatprgsVue#BufWinEnter#<buffer>')
+  if bufwinnr(bufnr()) != -1
+    doautocmd <nomodeline> formatprgsVue BufWinEnter <buffer>
+  endif
 endif
 
 let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
