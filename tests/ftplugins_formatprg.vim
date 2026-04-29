@@ -12,6 +12,7 @@ let s:fts = [
       \ 'c',
       \ 'cmake',
       \ 'css',
+      \ 'haskell',
       \ 'html',
       \ 'xhtml',
       \ 'java',
