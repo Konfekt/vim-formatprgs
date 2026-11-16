@@ -173,7 +173,7 @@ git clone https://github.com/Konfekt/vim-formatprgs ~/.vim/pack/plugins/start/vi
 ```
 
 The settings live in `after/ftplugin` so that they apply after, and are undone together with, Vim's own file type plug-ins.
-To use only some of them, copy `autoload/formatprgs.vim` to `~/.vim/autoload/` and the wanted files, say `after/ftplugin/sh.vim`, to `~/.vim/after/ftplugin/`.
+Each file is self-contained: to use only some of them, copy the wanted files, say `after/ftplugin/sh.vim`, to `~/.vim/after/ftplugin/`.
 
 # Tests
 

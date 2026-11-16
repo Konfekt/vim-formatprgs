@@ -1,6 +1,18 @@
-call formatprgs#init('formatprgsPerl')
+augroup formatprgsPerl
+  autocmd! * <buffer>
+  if exists('##ShellFilterPost')
+    autocmd ShellFilterPost <buffer> if v:shell_error | echohl WarningMsg | echomsg printf('shell filter returned error %d, undoing changes', v:shell_error) | echohl None | silent! undo | endif
+  endif
+augroup END
 
-if formatprgs#use('perltidy')
+" Whether to use formatter {name}: the one chosen by b:formatprg if that is
+" executable, otherwise any {name} found on $PATH.
+function! s:Use(name) abort
+  let choice = get(b:, 'formatprg', '')
+  return !empty(choice) && executable(choice) ? choice ==# a:name : executable(a:name)
+endfunction
+
+if s:Use('perltidy')
   function! s:PerltidyCmd() abort
     " Detect and prefer a project style file near the current buffer.
     let cfg = findfile('.perltidyrc', '.;')
@@ -18,7 +30,13 @@ if formatprgs#use('perltidy')
     return 'perltidy ' . args
   endfunction
 
-  call formatprgs#on_bufwinenter('formatprgsPerl', 'let &l:formatprg = ' . expand('<SID>') . 'PerltidyCmd()')
+  execute 'autocmd formatprgsPerl BufWinEnter <buffer> ++once ' .
+        \ 'let &l:formatprg = <SID>PerltidyCmd()'
 endif
 
-call formatprgs#undo('formatprgsPerl', 'setlocal formatprg< | unlet! b:formatprg b:formatprg_args')
+if exists('#formatprgsPerl#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
+  doautocmd <nomodeline> formatprgsPerl BufWinEnter <buffer>
+endif
+
+let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
+      \ 'setlocal formatprg< | unlet! b:formatprg b:formatprg_args | execute ''silent! autocmd! formatprgsPerl * <buffer>'''
