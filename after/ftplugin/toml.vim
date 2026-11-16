@@ -10,9 +10,8 @@ augroup END
 " See https://github.com/tombi-toml/tombi/pull/1044#issuecomment-3465851563
 let &l:formatprg = printf('tombi format %s%s - %s',
       \ get(b:, 'formatprg_args', ''),
-      \ filereadable(expand('%')) ? ' --stdin-filename ' . expand('%:p:S') . '' : '',
+      \ filereadable(expand('%')) ? ' --stdin-filename ' . expand('%:p:S') : '',
       \ has('win32') ? '2>nul' : '2>/dev/null')
 
-let b:undo_ftplugin = (exists('b:undo_ftplugin') ? b:undo_ftplugin . ' | ' : '') .
-    \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! autocmd! formatprgsToml * <buffer>'
-
+let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
+      \ 'setlocal formatprg< | unlet! b:formatprg_args | execute ''silent! autocmd! formatprgsToml * <buffer>'''
