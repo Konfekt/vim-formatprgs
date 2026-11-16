@@ -9,15 +9,15 @@ Rather meant for inspiration, but can be used as-is.
 
 # Use `gq` to format code
 
-Once this plug-in installed, Vim will automatically use the specified formatter when you use the `gq` command (see `:help gq`) in a buffer of the corresponding file type.
+Once this plug-in is installed, Vim will automatically use the specified formatter when you use the `gq` command (see `:help gq`) in a buffer of the corresponding file type.
 
 # Use `gw` to format prose
 
 While the gq operator (`:help gq`) defaults to formatting C (`:help C-indenting`) and is often universally used to format comments, say `gqip` to add line breaks to a paragraph, it respects a formatting program option (`:help 'formatprg'`) that can be set to a tool of one's choice.
 
-What `gq` with default settings does, C-style formatting, is more conveniently achieved by `gw` (`:help gw`) keeping cursor position (so that both operators become complimentary, instead of `gq` rather redundant).
+What `gq` with default settings does, C-style formatting, is more conveniently achieved by `gw` (`:help gw`) keeping cursor position (so that both operators become complementary, instead of `gq` rather redundant).
 
-With suitable `'formatlistpat'` and `'formatoptions'` such as 
+With suitable `'formatlistpat'` and `'formatoptions'` such as
 
 ```vim
 set formatoptions+=nw
@@ -28,7 +28,7 @@ set formatlistpat=\\C^\\s*\\([\\[({]\\\?\\([0-9]\\+\\\|[iIvVxXlLcCdDmM]\\+\\\|[a
 
 # Buffer Text Object
 
-Most formatters require additional context then the lines themselves to be formatted, some even the whole file or at least the code up to the cursor position.
+Most formatters require additional context than the lines themselves to be formatted, some even the whole file or at least the code up to the cursor position.
 (If formatting fails, use `:redo`, mapped to `U` or `<C-R>` by default to learn about the reasons.)
 To give more context, add to your `vimrc` a text-object, say `<CR>` which operates on the whole buffer and [keeps the cursor position in the same position](https://vi.stackexchange.com/questions/2319/is-there-a-text-object-for-the-entire-buffer/24811#24811) or just up to the cursor position:
 
@@ -52,7 +52,7 @@ onoremap <silent> <cr>                :<C-U>keepjumps call TextObjectAll()<CR>
 Some example file types and their formatters (without regarding the included fall-back formatters):
 
 - For JavaScript, Typescript, CSS, YAML, ... files, `prettier` is used as the formatter, whenever available.
-- For Python, `black(-mocchachino)` is used as the default formatter, whenever available, falling back to `ruff format`, `yapf` or `autopep8`.
+- For Python, `ruff format` is used as the default formatter, whenever available, falling back to `black-macchiato`, `yapf` or `autopep8`.
 - For C(++), Java ... files, `clang-format` is used as the formatter, whenever available.
 - For shell scripts, the `shfmt` tool is used with the following options:
 
@@ -61,13 +61,15 @@ Some example file types and their formatters (without regarding the included fal
     - `--space-redirects `: add trailing space to redirect operators.
     - `--indent`: Set the indentation level to the value of `shiftwidth` (if applicable).
 
-- For HTML files, `tidy` is used as the formatter, whenever available, tool for cleaning up and pretty-printing HTML.
+- For HTML files, `tidy`, a tool for cleaning up and pretty-printing HTML, is used as the formatter whenever available.
+- For JSON files, `jq` is used as the formatter, whenever available; set `g:json_formatprg` to use another jq-compatible program instead.
+  Without `jq`, `biome` or `prettier`, Vim's own JSON formatter is used if available.
 - ...
-- there are many more filetypes; please check the `ftplugin` folder.
+- there are many more filetypes; please check the `after/ftplugin` folder.
 
 # Language Servers Formatters
 
-For example, if using a language server plug-in such as [lsp](https://github.com/yegappan/lsp/), then, in any file type for which a language server capable of formatting has been set up, or mapping, setting 
+For example, if using a language server plug-in such as [lsp](https://github.com/yegappan/lsp/), then, in any file type for which a language server capable of formatting has been set up, or mapping, setting
 
 ```vim
 setlocal formatexpr=lsp#lsp#FormatExpr()
@@ -104,7 +106,7 @@ Recommended ways to set it:
     - `~/.vim/ftplugin/c.vim` with `let b:formatprg = 'uncrustify'`
     - `~/.vim/ftplugin/javascript.vim` with `let b:formatprg = 'prettier'`
 
-- Global autocommand:
+- Global autocommand, defined in your `vimrc` before `filetype plugin on` (or before the plug-in manager runs it, as `plug#end()` of vim-plug does) so that it runs before this plug-in:
     ```vim
     augroup MyFormatPrg
         autocmd!
@@ -164,19 +166,19 @@ Examples:
 
 # Installation
 
-To use these configuration files, copy them to your Vim configuration directory (usually `~/.vim/ftplugin/`).
-
-For example, to install the `sh.vim` configuration:
+Use a plug-in manager such as [vim-plug](https://github.com/junegunn/vim-plug) by adding `Plug 'konfekt/vim-formatprgs'` to your `vimrc`, or Vim's own packages:
 
 ```bash
-mkdir -p ~/.vim/ftplugin
-cp sh.vim ~/.vim/ftplugin/
+git clone https://github.com/Konfekt/vim-formatprgs ~/.vim/pack/plugins/start/vim-formatprgs
 ```
 
-Repeat the above steps for each file type configuration you want to use.
+The settings live in `after/ftplugin` so that they apply after, and are undone together with, Vim's own file type plug-ins.
+To use only some of them, copy `autoload/formatprgs.vim` to `~/.vim/autoload/` and the wanted files, say `after/ftplugin/sh.vim`, to `~/.vim/after/ftplugin/`.
 
-You may also use a plug-in manager such as [vim-plug](https://github.com/junegunn/vim-plug). 
-In this case, add `Plug 'konfekt/vim-formatprgs'` to your `vimrc` to use them.
+# Tests
+
+Run `tests/run.sh` to test with Vim and Neovim, or `tests/run.sh vim` for one of them.
+Formatters are replaced by stubs, except for some tests that use the real `jq`, `prettier`, `yapf` and `autopep8` if installed and are skipped otherwise.
 
 # Contributing
 
