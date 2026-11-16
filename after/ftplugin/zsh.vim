@@ -18,7 +18,7 @@ endif
 
 if executable('format_shell_cmd.py')
   " From https://github.com/bbkane/dotfiles/blob/master/bin_common/bin_common/format_shell_cmd.py
-  nnoremap <silent> <buffer> gqqq :<C-U>silent .!format_shell_cmd.py<CR>
+  nnoremap <silent> <buffer> gqgq :<C-U>silent .!format_shell_cmd.py<CR>
 endif
 
 if exists('#formatprgsZsh#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
@@ -26,4 +26,4 @@ if exists('#formatprgsZsh#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! nunmap <buffer> gqqq | execute ''silent! autocmd! formatprgsZsh * <buffer>'''
+      \ 'setlocal formatprg< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! nunmap <buffer> gqgq'' | execute ''silent! autocmd! formatprgsZsh * <buffer>'''

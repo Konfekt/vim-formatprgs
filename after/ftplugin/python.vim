@@ -61,4 +61,4 @@ elseif s:Use('autopep8')
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args | execute ''silent! autocmd! formatprgsPython * <buffer>'''
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg_cmd | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg b:formatprg_args | endif | execute ''silent! autocmd! formatprgsPython * <buffer>'''

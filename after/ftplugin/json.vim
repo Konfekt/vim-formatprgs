@@ -50,7 +50,7 @@ endfunction
 
 function! s:Biome(default_args) abort
   return 'biome format ' . get(b:, 'formatprg_args', a:default_args) . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ '--stdin-file-path=' . s:Path() . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
@@ -81,7 +81,7 @@ elseif s:Use('biome')
   execute 'autocmd formatprgsJSON BufWinEnter <buffer> ++once ' .
         \ "let &l:formatprg = <SID>Biome('--write --format-with-errors=true --colors=off')"
 elseif s:Use('prettier')
-  let b:formatprg_cmd = 'prettier ' . get(b:, 'formatprg_args', '--single-quote --parser=json')
+  let b:formatprg_cmd = 'prettier ' . get(b:, 'formatprg_args', '--log-level=error --no-color --no-error-on-unmatched-pattern --parser=json')
   setlocal formatexpr=<SID>PrettierFormatexpr()
 elseif v:version >= 901 && !has('nvim')
   " Vim's own JSON formatter
@@ -94,4 +94,4 @@ if exists('#formatprgsJSON#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal cinoptions< formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args | execute ''silent! autocmd! formatprgsJSON * <buffer>'''
+      \ 'setlocal cinoptions< formatprg< formatexpr< | unlet! b:formatprg_cmd | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg b:formatprg_args | endif | execute ''silent! autocmd! formatprgsJSON * <buffer>'''

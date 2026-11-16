@@ -73,7 +73,7 @@ endfunction
 
 function! s:Biome(default_args) abort
   return 'biome format ' . get(b:, 'formatprg_args', a:default_args) . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ '--stdin-file-path=' . s:Path() . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
@@ -94,4 +94,4 @@ if exists('#formatprgsJavaScript#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) 
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args | execute ''silent! autocmd! formatprgsJavaScript * <buffer>'''
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg_cmd | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg b:formatprg_args | endif | execute ''silent! autocmd! formatprgsJavaScript * <buffer>'''

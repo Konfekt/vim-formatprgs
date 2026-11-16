@@ -271,6 +271,56 @@ function! Test_python_yapf_honors_b_formatprg() abort
   call assert_match('^yapf ', s:Log())
 endfunction
 
+function! Test_formatprg_escapes_special_characters_in_file_name() abort
+  for [ext, tool] in [['css', 'biome'], ['c', 'uncrustify'], ['hs', 'ormolu'], ['toml', 'tombi']]
+    call s:Tools(tool)
+    let file = s:tmp . '/a#b%c.' . ext
+    call writefile(['x'], file)
+    execute 'edit! ' . fnameescape(file)
+    silent normal! gqq
+    call assert_match('a#b%c\.' . ext, s:Log(), tool)
+    bwipeout!
+  endfor
+endfunction
+
+function! Test_formatprg_choice_survives_filetype_reload() abort
+  call s:Tools('clang-format', 'astyle')
+  enew!
+  setlocal buftype=nofile
+  let b:formatprg = 'astyle'
+  let b:formatprg_args = '--marker'
+  setlocal filetype=c
+  call assert_match('^astyle --marker ', &l:formatprg)
+  " As a FileType autocommand that runs before the ftplugins would do.
+  let b:formatprg = 'astyle'
+  setlocal filetype=c
+  call assert_equal('', &l:formatexpr)
+  call assert_match('^astyle --marker ', &l:formatprg)
+  " Another filetype drops the choice.
+  setlocal filetype=java
+  call assert_false(exists('b:formatprg') || exists('b:formatprg_args'))
+  call assert_notequal('', &l:formatexpr)
+endfunction
+
+function! Test_shell_cmd_mapping_does_not_delay_gqq() abort
+  for ft in ['sh', 'zsh']
+    call s:Tools('format_shell_cmd.py')
+    call s:Buffer(ft)
+    call assert_notequal('', maparg('gqgq', 'n'), ft)
+    setlocal filetype=text
+    call assert_equal('', maparg('gqgq', 'n'), ft)
+  endfor
+endfunction
+
+function! Test_prettier_keeps_warnings_out_of_buffer() abort
+  for ft in ['json', 'typescript']
+    call s:Tools('prettier')
+    call s:Buffer(ft)
+    normal! gqq
+    call assert_match('^prettier --log-level=error ', s:Log(), ft)
+  endfor
+endfunction
+
 let s:filetypes = ['bib', 'c', 'cpp', 'cmake', 'css', 'haskell', 'html', 'xhtml',
       \ 'java', 'javascript', 'json', 'lua', 'mail', 'markdown', 'pandoc', 'perl',
       \ 'python', 'ruby', 'sh', 'sql', 'svelte', 'tex', 'toml', 'typescript',

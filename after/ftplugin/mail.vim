@@ -28,4 +28,4 @@ if exists('#formatprgsMail#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal cinoptions< equalprg< commentstring< comments< formatlistpat< formatoptions< | unlet! b:formatprg_args | execute ''silent! autocmd! formatprgsMail * <buffer>'''
+      \ 'setlocal cinoptions< equalprg< commentstring< comments< formatlistpat< formatoptions< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! autocmd! formatprgsMail * <buffer>'''

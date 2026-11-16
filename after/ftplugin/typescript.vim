@@ -73,7 +73,7 @@ endfunction
 
 function! s:Biome(default_args) abort
   return 'biome format ' . get(b:, 'formatprg_args', a:default_args) . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ '--stdin-file-path=' . s:Path() . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
@@ -83,7 +83,7 @@ if s:Use('biome')
   execute 'autocmd formatprgsTypeScript BufWinEnter <buffer> ++once ' .
         \ "let &l:formatprg = <SID>Biome('--write --format-with-errors=true --colors=off')"
 elseif s:Use('prettier')
-  let b:formatprg_cmd = 'prettier ' . get(b:, 'formatprg_args', '--single-quote --parser=babel-ts')
+  let b:formatprg_cmd = 'prettier ' . get(b:, 'formatprg_args', '--log-level=error --no-color --no-error-on-unmatched-pattern --single-quote --parser=babel-ts')
   setlocal formatexpr=<SID>PrettierFormatexpr()
 elseif s:Use('clang-format')
   setlocal formatexpr=<SID>ClangFormatexpr('Chromium','stdin.ts')
@@ -94,4 +94,4 @@ if exists('#formatprgsTypeScript#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) 
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_cmd b:formatprg_args | execute ''silent! autocmd! formatprgsTypeScript * <buffer>'''
+      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg_cmd | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg b:formatprg_args | endif | execute ''silent! autocmd! formatprgsTypeScript * <buffer>'''

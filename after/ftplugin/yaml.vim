@@ -47,4 +47,4 @@ let b:formatprg_cmd = 'prettier ' . get(b:, 'formatprg_args', '--log-level=error
 setlocal formatexpr=<SID>PrettierFormatexpr()
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatexpr< | unlet! b:formatprg_cmd b:formatprg_args | execute ''silent! autocmd! formatprgsYaml * <buffer>'''
+      \ 'setlocal formatexpr< | unlet! b:formatprg_cmd | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! autocmd! formatprgsYaml * <buffer>'''
