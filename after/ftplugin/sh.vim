@@ -26,4 +26,4 @@ if exists('#formatprgsSh#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< | unlet! b:formatprg_args | silent! nunmap <buffer> gqgq | execute ''silent! autocmd! formatprgsSh * <buffer>'''
+      \ 'setlocal formatprg< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! nunmap <buffer> gqgq'' | execute ''silent! autocmd! formatprgsSh * <buffer>'''

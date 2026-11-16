@@ -10,4 +10,4 @@ augroup END
 let &l:formatprg = 'tex-fmt ' . get(b:, 'formatprg_args', '--print --quiet --stdin')
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< | unlet! b:formatprg_args | execute ''silent! autocmd! formatprgsTex * <buffer>'''
+      \ 'setlocal formatprg< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! autocmd! formatprgsTex * <buffer>'''

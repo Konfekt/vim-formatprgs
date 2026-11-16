@@ -118,6 +118,7 @@ Recommended ways to set it:
 Notes:
 
 - `b:formatprg` is a selector for this plugin, not Vim's `'formatprg'` option.
+- `b:formatprg` and `b:formatprg_args` stay set when the file type is set again, as on `:edit`, and are removed when it changes to another one.
 - The plugin configures `'formatexpr'` or `'formatprg'` accordingly.
 - If using LSP-based formatting via `'formatexpr'`, that takes precedence over `'formatprg'`; consider separate mappings to access both.
 

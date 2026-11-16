@@ -9,7 +9,7 @@ augroup END
 
 function! s:Biome(default_args) abort
   return 'biome format ' . get(b:, 'formatprg_args', a:default_args) . ' ' .
-        \ '--stdin-file-path=' . expand('%:p:S') . ' ' .
+        \ '--stdin-file-path=' . shellescape(expand('%:p'), 1) . ' ' .
         \ (&textwidth > 0 ? '--line-width=' . &textwidth . ' ' : '') .
         \ '--indent-width=' . shiftwidth() . ' ' .
         \ '--indent-style=' . (&expandtab ? 'space' : 'tab')
@@ -23,4 +23,4 @@ if exists('#formatprgsSvelte#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< | unlet! b:formatprg_args | execute ''silent! autocmd! formatprgsSvelte * <buffer>'''
+      \ 'setlocal formatprg< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! autocmd! formatprgsSvelte * <buffer>'''

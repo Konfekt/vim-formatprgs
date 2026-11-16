@@ -47,4 +47,4 @@ endfunction
 setlocal formatexpr=<SID>StyluaFormatexpr()
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg_args | execute ''silent! autocmd! formatprgsLua * <buffer>'''
+      \ 'setlocal formatprg< formatexpr< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg_args | endif | execute ''silent! autocmd! formatprgsLua * <buffer>'''

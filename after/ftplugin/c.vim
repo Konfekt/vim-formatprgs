@@ -60,7 +60,7 @@ function! s:Uncrustify(args) abort
   return 'uncrustify ' . a:args . ' ' .
         \ (&textwidth > 0 ? ' --set code_width=' . &textwidth . ' --set cmt_width=' . &textwidth : '') .
         \ ' --set indent_columns=' . shiftwidth() . (&expandtab ? ' --set indent_with_tabs=0' : '') .
-        \ (filereadable(expand('%')) ? ' --assume ' . expand('%:p:S') : '') .
+        \ (filereadable(expand('%')) ? ' --assume ' . s:Path() : '') .
         \ (filereadable(cfg) ? ' -c ' . shellescape(cfg) : '') .
         \ ' -'
 endfunction
@@ -87,4 +87,4 @@ if exists('#formatprgsC#BufWinEnter#<buffer>') && bufwinnr(bufnr('%')) != -1
 endif
 
 let b:undo_ftplugin = (empty(get(b:, 'undo_ftplugin', '')) ? '' : b:undo_ftplugin . ' | ') .
-      \ 'setlocal formatprg< formatexpr< | unlet! b:formatprg b:formatprg_args | execute ''silent! autocmd! formatprgsC * <buffer>'''
+      \ 'setlocal formatprg< formatexpr< | if &filetype !=# ''' . &filetype . ''' | unlet! b:formatprg b:formatprg_args | endif | execute ''silent! autocmd! formatprgsC * <buffer>'''
